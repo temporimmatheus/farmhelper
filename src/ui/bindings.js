@@ -1,0 +1,72 @@
+import { $ } from './dom.js';
+import { clamp } from '../core/utils.js';
+
+export function bindControls({ store, model, map, render, renderProgress, sync }) {
+  const { state } = store;
+  let searchTimer;
+  const cleanup = [];
+  function listen(target, event, handler) {
+    target.addEventListener(event, handler);
+    cleanup.push(() => target.removeEventListener(event, handler));
+  }
+  function numericInput(id, key, min, max) {
+    const element = $(id);
+    element.value = state[key];
+    const apply = () => {
+      const value = Number(element.value);
+      if (element.value.trim() === '' || !Number.isFinite(value)) return;
+      store.patch({ [key]: clamp(Math.round(value), min, max) });
+      render();
+    };
+    listen(element, 'input', apply);
+    listen(element, 'change', () => { apply(); element.value = state[key]; });
+  }
+  numericInput('level', 'level', 0, 40);
+  numericInput('matk', 'matk', 1, 99999);
+  numericInput('patk', 'patk', 1, 99999);
+  numericInput('mpSkill', 'mpSkill', 0, 9999);
+  numericInput('castsKill', 'castsKill', 1, 30);
+  const setXp = event => {
+    const raw = event.target.value.trim();
+    const value = Number(raw.replace(',', '.'));
+    if (!raw || !Number.isFinite(value)) return;
+    store.patch({ xpPercent: clamp(Math.round(value * 100) / 100, 0, 100) });
+    renderProgress();
+  };
+  listen($('xpRange'), 'input', setXp);
+  listen($('xpExact'), 'input', setXp);
+  listen($('xpExact'), 'blur', renderProgress);
+  $('attackMode').value = state.mode;
+  listen($('attackMode'), 'change', event => { store.patch({ mode: event.target.value }); render(); });
+  $('search').value = state.query;
+  listen($('search'), 'input', event => {
+    store.patch({ query: event.target.value });
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => render({ focus: true }), 100);
+  });
+  for (const [id, scope] of [['recommendedBtn', 'near'], ['allBtn', 'all']]) {
+    listen($(id), 'click', () => { store.patch({ scope }); render(); });
+  }
+  listen(document, 'click', event => {
+    const button = event.target.closest('[data-area],[data-mob],[data-world]');
+    if (!button) return;
+    if (button.dataset.area && model.zMap.has(button.dataset.area)) {
+      store.patch({ area: button.dataset.area, mob: '' });
+      render({ focus: true });
+    }
+    if (button.dataset.mob) {
+      const mob = model.MOB.get(button.dataset.mob);
+      if (mob) { store.patch({ area: mob.zone, mob: mob.id }); render({ focus: true }); }
+    }
+    if (button.dataset.world) map.setWorld(button.dataset.world);
+  });
+  listen($('compareAdd'), 'click', () => {
+    const area = state.area;
+    if (!area) return;
+    store.patch({ compare: state.compare.includes(area) ? state.compare.filter(z => z !== area) : [...state.compare.slice(-1), area] });
+    render();
+  });
+  listen($('compareClose'), 'click', () => { store.patch({ compare: [] }); render(); });
+  listen($('reload'), 'click', () => sync.sync(true));
+  return () => { cleanup.forEach(fn => fn()); clearTimeout(searchTimer); };
+}

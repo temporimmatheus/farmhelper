@@ -1,0 +1,159 @@
+@media(max-width:1250px) {
+  .layout {
+    grid-template-columns:260px minmax(390px,1fr)
+  }
+  .details {
+    grid-column:1/-1
+  }
+  .details-scroll {
+    max-height:none
+  }
+  .moblist {
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(205px,1fr))
+  }
+  .controls {
+    grid-template-columns:repeat(4,minmax(0,1fr))
+  }
+  .controls .queryfield {
+    grid-column:1/-1
+  }
+}
+@media(max-width:770px) {
+  .frame {
+    padding:9px 9px 20px
+  }
+  .top {
+    align-items:flex-start;
+    padding:9px 0 12px
+  }
+  .brand h1 {
+    font-size:16px
+  }
+  .logo {
+    width:34px;
+    height:34px;
+    font-size:19px
+  }
+  .status {
+    gap:5px
+  }
+  .status-pill {
+    font-size:10px
+  }
+  .controls {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:9px;
+    padding:11px
+  }
+  .controls .queryfield {
+    grid-column:1/-1
+  }
+  .layout {
+    display:flex;
+    flex-direction:column;
+    gap:10px
+  }
+  .areas-panel,.map-panel,.details,.compareout {
+    width:100%
+  }
+  .areas-panel {
+    order:1
+  }
+  .details {
+    order:2
+  }
+  .map-panel {
+    order:3
+  }
+  .area-head {
+    padding:8px 10px
+  }
+  .areas {
+    max-height:195px
+  }
+  .area-row {
+    grid-template-columns:30px 1fr 44px;
+    padding:10px
+  }
+  .area-name {
+    font-size:12px
+  }
+  .viewport {
+    height:min(54dvh,460px);
+    min-height:310px
+  }
+  .mapbar {
+    padding:11px
+  }
+  .mapbar h2 {
+    font-size:14px
+  }
+  .map-buttons button {
+    width:43px;
+    height:43px
+  }
+  .maphint {
+    max-width:240px
+  }
+  .details-scroll {
+    max-height:none
+  }
+  .metrics {
+    margin:9px 0
+  }
+  .moblist {
+    grid-template-columns:1fr
+  }
+  .compare-grid {
+    grid-template-columns:1fr
+  }
+  .compareout {
+    order:4
+  }
+  .footer {
+    margin-top:12px
+  }
+  .hint {
+    display:none
+  }
+  .field input,.field select {
+    height:42px
+  }
+  .mapfoot {
+    font-size:10px
+  }
+  .status-pill {
+    max-width:160px
+  }
+}
+@media(max-width:390px) {
+  .top .quiet-btn {
+    display:none
+  }
+  .status-pill {
+    max-width:120px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap
+  }
+  .controls {
+    gap:7px
+  }
+  .field label {
+    font-size:10px
+  }
+  .metrics {
+    gap:5px
+  }
+  .metric b {
+    font-size:16px
+  }
+  .mapbar-right button {
+    font-size:10px;
+    padding:7px
+  }
+  .maphint {
+    font-size:9px
+  }
+}

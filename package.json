@@ -1,0 +1,17 @@
+{
+  "name": "farm-helper",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Atlas modular de farm para Lineage II Chronicle 1",
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "dev": "node scripts/serve.js",
+    "build": "node scripts/build.js",
+    "preview": "node scripts/serve.js --dist",
+    "check": "node scripts/check.js",
+    "test": "node --test tests/unit/*.test.js",
+    "test:integration": "node --test tests/integration/*.test.js",
+    "verify": "npm run check && npm test && npm run test:integration && npm run build"
+  }
+}

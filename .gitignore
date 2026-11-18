@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.tmp/
+coverage/
+test-results/
+*.log
+.env
+.env.*
+!.env.example
+# Original supplied by the user; retained locally as a migration reference.
+FARM_HELPER.html

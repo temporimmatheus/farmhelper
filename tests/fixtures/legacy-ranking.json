@@ -1,0 +1,230 @@
+[
+  {
+    "state": {
+      "level": 0,
+      "mode": "magic",
+      "matk": 26,
+      "patk": 17,
+      "query": "",
+      "scope": "near"
+    },
+    "count": 202,
+    "areas": [
+      {
+        "zone": "Talking Island Village",
+        "score": 34.0412475024,
+        "leader": "m010"
+      },
+      {
+        "zone": "Dark Elf Village",
+        "score": 33.9192365202,
+        "leader": "m014"
+      },
+      {
+        "zone": "Dwarven Village",
+        "score": 32.6384353949,
+        "leader": "m008"
+      },
+      {
+        "zone": "Obelisk of Victory",
+        "score": 32.3846935773,
+        "leader": "m018"
+      },
+      {
+        "zone": "The Dark Forest",
+        "score": 32.3846935773,
+        "leader": "m016"
+      }
+    ]
+  },
+  {
+    "state": {
+      "level": 0,
+      "mode": "physical",
+      "matk": 26,
+      "patk": 17,
+      "query": "",
+      "scope": "near"
+    },
+    "count": 202,
+    "areas": [
+      {
+        "zone": "Dwarven Village",
+        "score": 18.5760397926,
+        "leader": "m008"
+      },
+      {
+        "zone": "Talking Island Village",
+        "score": 18.2057955088,
+        "leader": "m010"
+      },
+      {
+        "zone": "Shadow of the Mother Tree",
+        "score": 17.6130486725,
+        "leader": "m009"
+      },
+      {
+        "zone": "The Shilen Temple",
+        "score": 17.6130486725,
+        "leader": "m011"
+      },
+      {
+        "zone": "Dark Elf Village",
+        "score": 17.5137595638,
+        "leader": "m014"
+      }
+    ]
+  },
+  {
+    "state": {
+      "level": 17,
+      "mode": "magic",
+      "matk": 26,
+      "patk": 17,
+      "query": "",
+      "scope": "near"
+    },
+    "count": 202,
+    "areas": [
+      {
+        "zone": "Gludin Village",
+        "score": 48.1855826764,
+        "leader": "m078"
+      },
+      {
+        "zone": "Ruins of Agony",
+        "score": 46.643477153,
+        "leader": "m076"
+      },
+      {
+        "zone": "The Neutral Zone",
+        "score": 46.6125566876,
+        "leader": "m073"
+      },
+      {
+        "zone": "School of Dark Arts",
+        "score": 46.4932820611,
+        "leader": "m074"
+      },
+      {
+        "zone": "Elven Village",
+        "score": 45.6515463534,
+        "leader": "m081"
+      }
+    ]
+  },
+  {
+    "state": {
+      "level": 17,
+      "mode": "physical",
+      "matk": 26,
+      "patk": 17,
+      "query": "",
+      "scope": "near"
+    },
+    "count": 202,
+    "areas": [
+      {
+        "zone": "Gludin Village",
+        "score": 18.5628891967,
+        "leader": "m078"
+      },
+      {
+        "zone": "Elven Village",
+        "score": 18.4068886137,
+        "leader": "m081"
+      },
+      {
+        "zone": "Ruins of Agony",
+        "score": 17.9752380814,
+        "leader": "m076"
+      },
+      {
+        "zone": "The Neutral Zone",
+        "score": 17.9350814359,
+        "leader": "m073"
+      },
+      {
+        "zone": "School of Dark Arts",
+        "score": 17.8569196252,
+        "leader": "m074"
+      }
+    ]
+  },
+  {
+    "state": {
+      "level": 40,
+      "mode": "magic",
+      "matk": 26,
+      "patk": 17,
+      "query": "",
+      "scope": "near"
+    },
+    "count": 202,
+    "areas": [
+      {
+        "zone": "Hunters Village",
+        "score": 26.9021095322,
+        "leader": "m197"
+      },
+      {
+        "zone": "Ivory Tower",
+        "score": 26.9021095322,
+        "leader": "m196"
+      },
+      {
+        "zone": "Forest of Evil",
+        "score": 24.272580029,
+        "leader": "m200"
+      },
+      {
+        "zone": "The Forest of Mirrors",
+        "score": 23.5271597434,
+        "leader": "m199"
+      },
+      {
+        "zone": "Cave of Trials",
+        "score": 22.7047044837,
+        "leader": "m194"
+      }
+    ]
+  },
+  {
+    "state": {
+      "level": 40,
+      "mode": "physical",
+      "matk": 26,
+      "patk": 17,
+      "query": "",
+      "scope": "near"
+    },
+    "count": 202,
+    "areas": [
+      {
+        "zone": "Hunters Village",
+        "score": 9.7792758072,
+        "leader": "m197"
+      },
+      {
+        "zone": "Ivory Tower",
+        "score": 9.7792758072,
+        "leader": "m196"
+      },
+      {
+        "zone": "Forest of Evil",
+        "score": 8.8234067433,
+        "leader": "m200"
+      },
+      {
+        "zone": "The Forest of Mirrors",
+        "score": 8.5502966109,
+        "leader": "m199"
+      },
+      {
+        "zone": "Cave of Trials",
+        "score": 8.5190404886,
+        "leader": "m194"
+      }
+    ]
+  }
+]
