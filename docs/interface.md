@@ -57,6 +57,8 @@ As abas usam `aria-selected`, `aria-controls`, foco alternado e navegação por 
 
 Os elementos existentes permanecem montados ao alternar telas e abas, preservando campos, seleção e rolagem. As mudanças na geometria avisam o mapa para atualizar seu enquadramento. A limpeza de listeners do shell acompanha `destroy()` da aplicação.
 
+No desktop, o painel do mapa acompanha a altura disponível na linha do navegador lateral. Sua área interativa cresce entre os controles e a legenda, mantendo as informações de rodapé na base e evitando um vazio externo quando a lista de monstros é mais alta. O navegador e o painel do alvo mantêm sua altura natural. Em telas estreitas, o mapa conserva sua altura própria ao ser empilhado.
+
 ## 4. Componentes e hierarquia dos indicadores
 
 Os componentes em `src/ui/components.js` e `src/ui/components.css` definem ícones SVG, etiquetas, métricas, estatísticas curtas e mensagens sem resultados. Os valores e textos são escapados antes de formar HTML. Os estilos específicos de área e comparação ficam nas pastas de cada funcionalidade; o CSS básico mantém os elementos comuns.

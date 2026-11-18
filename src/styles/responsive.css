@@ -37,7 +37,7 @@
   .areas { max-height: 280px; }
   .details-scroll { max-height: 380px; }
   .browser-search { padding: 14px; }
-  .viewport { height: 54svh; min-height: 340px; max-height: 520px; }
+  .viewport { flex: none; height: 54svh; min-height: 340px; max-height: 520px; }
   .mapbar { flex-wrap: nowrap; }
   .mapbar h3 { font-size: 16px; }
   .tab { padding-inline: 10px; }

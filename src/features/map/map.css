@@ -1,4 +1,5 @@
-.map-panel { grid-area: map; }
+.map-panel { grid-area: map; display: flex; flex-direction: column; align-self: stretch; min-height: 0; }
+.map-panel > :not(.viewport) { flex-shrink: 0; }
 .mapbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 20px; }
 .mapbar > div:first-child { min-width: 0; }
 .mapbar h3 { font-size: var(--font-lg); margin-top: 6px; overflow-wrap: anywhere; }
@@ -17,7 +18,7 @@
 .selection-dot { flex-shrink: 0; width: 6px; height: 6px; border-radius: 50%; background: var(--mint); }
 .selection-dot.is-target { background: var(--gold); border-radius: 1px; transform: rotate(45deg); }
 .map-selection > .small { margin-left: auto; font-size: .625rem; color: var(--subtle); }
-.viewport { height: clamp(440px, 57vh, 680px); position: relative; overflow: hidden; background: var(--surface-input); touch-action: none; cursor: grab; user-select: none; border-block: 1px solid var(--line-soft); }
+.viewport { flex: 1 0 auto; height: clamp(440px, 57vh, 680px); position: relative; overflow: hidden; background: var(--surface-input); touch-action: none; cursor: grab; user-select: none; border-block: 1px solid var(--line-soft); }
 .viewport.dragging { cursor: grabbing; }
 .world { position: absolute; top: 0; left: 0; width: 1000px; height: 899px; transform-origin: 0 0; will-change: transform; }
 .world > img, .world > canvas { width: 100%; height: 100%; position: absolute; inset: 0; pointer-events: none; }
