@@ -1,5 +1,6 @@
 import { $ } from '../../ui/dom.js';
 import { fnum } from '../../core/utils.js';
+import { badge } from '../../ui/components.js';
 
 // Navigation belongs to the shell; character, formulas and saved selections stay in the store.
 const VIEWS = {
@@ -64,6 +65,7 @@ export function createShellController({ state, model }) {
       $('targetDefenseLabel').textContent = state.mode === 'magic' ? 'M.Def' : 'P.Def';
       $('targetDefense').textContent = fnum(model.def(target));
       $('targetSpawns').textContent = fnum(model.countPlaces(target));
+      $('targetTraits').innerHTML = badge(target.agg ? 'Agressivo' : 'Passivo', { tone: target.agg ? 'warning' : 'neutral' }) + badge(target.defQuality === 'exact' ? 'Def. verificada' : 'Def. estimada', { tone: target.defQuality === 'exact' ? 'neutral' : 'warning', symbol: 'shield' });
     }
     if (changed) layoutChanged();
   }

@@ -30,7 +30,7 @@ Para usar outra porta, defina a variável de ambiente `PORT` antes de executar o
 
 ## Estrutura
 
-A nova interface tem navegação **Explorar/Comparar**, personagem e progresso compartilhados, abas **Áreas/Monstros** e um painel contextual para o alvo selecionado. Os padrões e a organização das primeiras três etapas estão em [docs/interface.md](docs/interface.md).
+A nova interface tem navegação **Explorar/Comparar**, personagem e progresso compartilhados, abas **Áreas/Monstros**, cartões de alvos, controles de camadas do mapa e comparação por indicadores alinhados. Os padrões e a organização das cinco primeiras etapas estão em [docs/interface.md](docs/interface.md).
 
 | Local | Responsabilidade |
 | --- | --- |
@@ -51,6 +51,7 @@ A nova interface tem navegação **Explorar/Comparar**, personagem e progresso c
 | `src/styles/` | Estilos gerais e regras responsivas |
 | `src/styles/tokens.css` | Cores, tipografia, espaçamentos e dimensões compartilhadas |
 | `src/ui/` | Referências ao DOM e eventos dos controles |
+| `src/ui/components.js` | Componentes compartilhados de etiquetas, métricas, estatísticas e ícones |
 | `scripts/` | Servidor, verificação e build usando apenas Node.js |
 | `tests/` | Testes unitários, integração e resultados de referência da versão original |
 | `.github/workflows/ci.yml` | Verificação automática em pushes e pull requests |

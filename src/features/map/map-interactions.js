@@ -1,6 +1,6 @@
 import { clamp } from '../../core/utils.js';
 
-export function bindMapInteractions({ $, baseScale, zoomAt, fitMap, updateTransform, schedulePaintPins, screenToWorld, hotspotSelect, getCenter, setCenter, getZoom, setZoom, render, invalidate, getWorld }) {
+export function bindMapInteractions({ $, baseScale, zoomAt, fitMap, updateTransform, schedulePaintPins, screenToWorld, hotspotSelect, getCenter, setCenter, getZoom, setZoom, render, invalidate, getWorld, toggleHeat, toggleSpawns }) {
   const cleanup = [], touches = new Map();
   const viewport = $('mapViewport'), image = $('mapImage');
   let drag = null, pinch = null;
@@ -12,7 +12,10 @@ export function bindMapInteractions({ $, baseScale, zoomAt, fitMap, updateTransf
   listen($('zoomIn'), 'click', () => centerZoom(1.3));
   listen($('zoomOut'), 'click', () => centerZoom(1 / 1.3));
   listen($('zoomFit'), 'click', fitMap);
-  listen($('zoomArea'), 'click', () => render({ focus: true }));
+  listen($('zoomArea'), 'click', () => render({ focus: true, targetOnly: false }));
+  listen($('zoomTarget'), 'click', () => render({ focus: true, targetOnly: true }));
+  listen($('toggleHeat'), 'click', toggleHeat);
+  listen($('toggleSpawns'), 'click', toggleSpawns);
   listen(viewport, 'wheel', event => {
     event.preventDefault();
     const rect = viewport.getBoundingClientRect();

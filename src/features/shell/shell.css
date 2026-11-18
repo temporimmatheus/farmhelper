@@ -37,6 +37,8 @@
 .target-panel .panelhead { padding: 12px 16px; }
 .target-body { padding: 20px; }
 .target-body h3 { margin: 14px 0 8px; font-size: 22px; overflow-wrap: anywhere; }
+.target-badges, .target-traits { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; }
+.target-traits { margin-top: 16px; }
 .target-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 24px 0; }
 .target-stats div { min-width: 0; }
 .target-stats dt { font-size: var(--font-xs); color: var(--muted); }

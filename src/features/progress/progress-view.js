@@ -26,10 +26,13 @@ export function createProgressView({ state, model }) {
     $('xpKills').textContent = kills === null ? '—' : fnum(kills);
     $('mpRemaining').textContent = mpRemaining === null ? '—' : fnum(mpRemaining) + ' MP';
     $('xpPerMp').textContent = xpPerMp === null ? '—' : xpPerMp.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    $('progressTargetName').textContent = !configured ? 'Informe seu nível para começar' : target?.name || 'Nenhum alvo disponível';
+    $('progressTargetMode').textContent = state.mob ? 'Selecionado' : 'Automático';
+    $('progressTargetMode').className = `badge ${state.mob ? 'badge--gold' : ''}`;
     $('xpTarget').textContent = !configured
       ? 'Informe seu nível (1–40) para ver a XP restante e o custo de mana até subir.'
       : target
-        ? `Referência: ${target.name} · ${fnum(earned)} XP/kill · ${state.castsKill} skill(s) por kill.`
+        ? `${fnum(earned)} XP/kill · ${state.castsKill} skill(s) por kill · ${state.mob ? 'alvo escolhido por você' : 'alvo líder estimado da área'}.`
         : 'Selecione uma área ou monstro para estimar os kills restantes.';
   }
   return { render };

@@ -9,6 +9,32 @@ export function createMapController({ state, model, repository, updateWorld }) {
   const viewport = $('mapViewport'), worldElement = $('mapWorld');
   let center = { x: 500, y: 449 }, zoom = 1;
   let signature = '', points = [], hotspots = [], pinsTimer;
+  let showHeat = true, showPositions = true;
+  let hasFixedPositions = false;
+
+  function updateMarkerHint() {
+    $('targetLegend').hidden = !state.mob || !hasFixedPositions || !showPositions || zoom < 2.4;
+    $('mapPointHint').textContent = !showPositions ? 'Posições fixas ocultas'
+      : !points.length ? 'Sem registros neste mapa'
+        : !hasFixedPositions ? 'Territórios aproximados, sem posições fixas'
+          : zoom < 2.4 ? 'Aproxime para ver posições fixas'
+            : state.mob ? 'Posições fixas do alvo em destaque' : 'Posições fixas visíveis';
+  }
+
+  function updatePresentation() {
+    const target = model.MOB.get(state.mob);
+    $('mapSelectionName').textContent = target ? `Alvo · ${target.name}` : 'Todos os monstros da região';
+    $('mapSelectionDot').classList.toggle('is-target', Boolean(target));
+    hasFixedPositions = points.some(point => point.kind === 'point' && (!target || point.m.id === target.id));
+    $('mapEmpty').hidden = points.length > 0;
+    $('zoomArea').disabled = !points.length;
+    $('zoomTarget').disabled = !target || !points.some(point => point.m.id === target.id);
+    $('heatCanvas').hidden = !showHeat;
+    $('mapPins').hidden = !showPositions;
+    $('toggleHeat').setAttribute('aria-pressed', String(showHeat));
+    $('toggleSpawns').setAttribute('aria-pressed', String(showPositions));
+    updateMarkerHint();
+  }
 
   function baseScale() {
     const map = maps[state.world];
@@ -19,6 +45,10 @@ export function createMapController({ state, model, repository, updateWorld }) {
     worldElement.style.transform = `translate(${viewport.clientWidth / 2 - center.x * scale}px,${viewport.clientHeight / 2 - center.y * scale}px) scale(${scale})`;
     worldElement.style.setProperty('--pin-world-size', `${(4.5 / scale).toFixed(3)}px`);
     worldElement.style.setProperty('--pin-world-stroke', `${(.65 / scale).toFixed(3)}px`);
+    $('mapZoomLabel').textContent = `${Math.round(zoom * 100)}%`;
+    $('zoomIn').disabled = zoom >= 10;
+    $('zoomOut').disabled = zoom <= .75;
+    updateMarkerHint();
   }
   function paintPins() {
     const layer = $('mapPins');
@@ -39,7 +69,7 @@ export function createMapController({ state, model, repository, updateWorld }) {
     center = { x: map.w / 2, y: map.h / 2 }; zoom = 1;
     updateTransform(); schedulePaintPins();
   }
-  function render({ focus = false } = {}) {
+  function render({ focus = false, targetOnly = true } = {}) {
     $('mapTitle').textContent = state.area || 'Selecione uma área';
     const nextSignature = [state.area, state.world, repository.revision].join('|');
     if (signature !== nextSignature) {
@@ -52,7 +82,7 @@ export function createMapController({ state, model, repository, updateWorld }) {
       $('mapCoverage').textContent = points.length ? `${hotspots.length} concentrações` : 'Apenas catálogo';
     }
     if (focus && points.length) {
-      const selected = state.mob ? points.filter(point => point.m.id === state.mob) : [];
+      const selected = targetOnly && state.mob ? points.filter(point => point.m.id === state.mob) : [];
       const targets = selected.length ? selected : points;
       const xs = targets.map(point => point.x), ys = targets.map(point => point.y);
       const left = Math.min(...xs), right = Math.max(...xs), top = Math.min(...ys), bottom = Math.max(...ys);
@@ -60,12 +90,15 @@ export function createMapController({ state, model, repository, updateWorld }) {
       const scale = baseScale();
       zoom = clamp(Math.min(viewport.clientWidth / (Math.max(80, right - left) * scale * 1.5), viewport.clientHeight / (Math.max(80, bottom - top) * scale * 1.5)), 1, 5);
     } else if (focus) fitMap();
-    updateTransform(); paintPins();
+    updateTransform(); paintPins(); updatePresentation();
   }
   function setWorld(world) {
     if (!Object.hasOwn(maps, world)) return;
     updateWorld(world);
-    document.querySelectorAll('[data-world]').forEach(button => button.classList.toggle('on', button.dataset.world === world));
+    document.querySelectorAll('[data-world]').forEach(button => {
+      button.classList.toggle('on', button.dataset.world === world);
+      button.setAttribute('aria-pressed', String(button.dataset.world === world));
+    });
     $('mapImage').src = maps[world].src;
     worldElement.style.width = maps[world].w + 'px';
     worldElement.style.height = maps[world].h + 'px';
@@ -87,6 +120,7 @@ export function createMapController({ state, model, repository, updateWorld }) {
     return { x: center.x + (clientX - rect.left - viewport.clientWidth / 2) / scale, y: center.y + (clientY - rect.top - viewport.clientHeight / 2) / scale };
   }
   function hotspotSelect(point) {
+    if (!showHeat) return;
     let found = null, distance = Infinity;
     for (const hotspot of hotspots) {
       const candidate = Math.hypot(hotspot.x - point.x, hotspot.y - point.y);
@@ -100,6 +134,8 @@ export function createMapController({ state, model, repository, updateWorld }) {
       <div class="spotmob">${mobs.map(mob => `<button type="button" data-mob="${esc(mob.id)}">${esc(mob.name)} · Lv ${mob.lv}</button>`).join('')}</div>`;
   }
   const unbind = bindMapInteractions({ $, baseScale, zoomAt, fitMap, updateTransform, schedulePaintPins, screenToWorld, hotspotSelect, render,
+    toggleHeat() { showHeat = !showHeat; if (!showHeat) $('hotspot').classList.remove('visible'); updatePresentation(); },
+    toggleSpawns() { showPositions = !showPositions; updateTransform(); updatePresentation(); },
     getCenter: () => center, setCenter: value => { center = value; },
     getZoom: () => zoom, setZoom: value => { zoom = value; },
     invalidate: () => { signature = ''; }, getWorld: () => state.world,

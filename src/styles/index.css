@@ -1,6 +1,9 @@
 @import './tokens.css';
 @import './base.css';
+@import '../ui/components.css';
 @import '../features/shell/shell.css';
+@import '../features/areas/areas.css';
+@import '../features/compare/compare.css';
 @import '../features/map/map.css';
 @import '../features/progress/progress.css';
 @import './responsive.css';

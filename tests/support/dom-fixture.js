@@ -19,7 +19,8 @@ class Element extends EventTarget {
   getBoundingClientRect() { return { left: 0, top: 0, width: this.clientWidth, height: this.clientHeight }; }
   closest(selector) {
     if (selector === 'button') return this.tagName === 'button' ? this : null;
-    return ['area', 'mob', 'world'].some(key => Object.hasOwn(this.dataset, key)) ? this : null;
+    const keys = [...selector.matchAll(/\[data-([\w-]+)\]/g)].map(match => match[1].replace(/-([a-z])/g, (_whole, letter) => letter.toUpperCase()));
+    return keys.some(key => Object.hasOwn(this.dataset, key)) ? this : null;
   }
   insertAdjacentHTML(_where, html) { this.innerHTML += html; }
   setPointerCapture() {}

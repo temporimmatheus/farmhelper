@@ -49,8 +49,18 @@ export function bindControls({ store, model, map, render, renderProgress, sync, 
     listen($(id), 'click', () => { store.patch({ scope }); render(); });
   }
   listen(document, 'click', event => {
-    const button = event.target.closest('[data-area],[data-mob],[data-world]');
+    const button = event.target.closest('[data-area],[data-mob],[data-world],[data-remove-compare],[data-explore]');
     if (!button) return;
+    if (button.dataset.removeCompare) {
+      store.patch({ compare: state.compare.filter(zone => zone !== button.dataset.removeCompare) });
+      render();
+      $('navCompare').focus();
+      return;
+    }
+    if (Object.hasOwn(button.dataset, 'explore')) {
+      shell.showView('explore'); shell.showBrowser('areas'); $('search').focus();
+      return;
+    }
     if (button.dataset.area && model.zMap.has(button.dataset.area)) {
       const fromComparison = shell.view === 'compare';
       store.patch({ area: button.dataset.area, mob: '', ...(fromComparison ? { query: '', scope: 'all' } : {}) });

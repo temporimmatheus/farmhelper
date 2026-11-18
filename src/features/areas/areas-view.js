@@ -1,23 +1,24 @@
 import { $ } from '../../ui/dom.js';
 import { esc } from '../../core/utils.js';
+import { badge, emptyMessage } from '../../ui/components.js';
 
 export function createAreasView({ state, model }) {
   function render() {
     const areas = model.visibleZones();
     const maximum = Math.max(1, ...areas.map(area => area.score));
-    $('areaCount').textContent = `${areas.length} áreas · ${model.MOBS.length} mobs no catálogo`;
+    $('areaCount').textContent = `${areas.length} áreas · ${model.MOBS.length} mobs`;
     $('recommendedBtn').classList.toggle('active', state.scope === 'near');
     $('allBtn').classList.toggle('active', state.scope === 'all');
-    $('areaCoverage').textContent = `${areas.filter(area => area.withSpawns).length} com spawns`;
-    $('areaList').innerHTML = areas.length ? areas.map((area, index) => `
-      <div class="area-row ${state.area === area.zone ? 'chosen' : ''}">
-        <span class="area-num">${index + 1}</span>
-        <button class="area-select" data-area="${esc(area.zone)}">
-          <span class="area-name">${esc(area.zone)}</span>
-          <span class="area-sub">Lv ${area.lowLv}–${area.highLv} · ${area.mobs.length} mobs · ${area.sites ? area.sites + ' registros C1' : 'sem mapa C1'}</span>
-        </button>
-        <span class="area-score">${Math.round(100 * area.score / maximum)}<small>/100</small></span>
-      </div>`).join('') : '<div class="no-data">Nenhuma área corresponde à busca. Apague o termo ou selecione “Todas”.</div>';
+    $('areaCoverage').textContent = `${areas.filter(area => area.withSpawns).length} com registros C1`;
+    $('areaList').innerHTML = areas.length ? areas.map((area, index) => {
+      const selected = state.area === area.zone;
+      const score = Math.round(100 * area.score / maximum);
+      return `<button type="button" class="area-row ${selected ? 'chosen' : ''}" data-area="${esc(area.zone)}" aria-pressed="${selected}">
+        <span class="area-num">${String(index + 1).padStart(2, '0')}</span>
+        <span class="area-copy"><span class="area-name">${esc(area.zone)}</span><span class="area-sub">Níveis ${area.lowLv}–${area.highLv} · ${area.mobs.length} mobs</span><span class="area-flags">${badge(selected ? 'Região atual' : area.sites ? 'Registros C1' : 'Sem localização', { tone: selected ? 'gold' : 'neutral', symbol: selected ? 'check' : 'pin' })}</span></span>
+        <span class="area-score" title="Índice relativo às áreas da lista atual">${score}<small>/100</small></span>
+      </button>`;
+    }).join('') : emptyMessage('Nenhuma área encontrada', 'Tente outro nome de área ou monstro, ou limpe a busca.');
   }
   return { render };
 }

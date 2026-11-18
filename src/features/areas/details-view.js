@@ -1,41 +1,50 @@
 import { $ } from '../../ui/dom.js';
 import { esc, fnum } from '../../core/utils.js';
+import { badge, metric, inlineStat, icon, emptyMessage } from '../../ui/components.js';
 
 export function createDetailsView({ state, model }) {
   function render() {
     const area = model.statZone(state.area);
     $('compareAdd').disabled = !area.mobs.length;
+    $('compareAdd').setAttribute('aria-pressed', String(state.compare.includes(area.zone)));
     if (!area.mobs.length) {
       $('areaTitle').textContent = 'Nenhuma área selecionada';
       $('areaLevelLabel').textContent = 'FARM POR ÁREA';
-      $('areaBlurb').textContent = 'Busque um mob ou ajuste o nível para encontrar áreas de farm.';
+      $('areaBlurb').textContent = 'Escolha uma região para conhecer seus monstros.';
       $('metrics').innerHTML = ''; $('mobList').innerHTML = '';
-      $('mobsTitle').textContent = 'Mobs'; $('mobsCount').textContent = '0';
-      $('qualityInfo').textContent = ''; $('compareAdd').textContent = '＋ Comparar';
+      $('mobsTitle').textContent = 'Monstros'; $('mobsCount').textContent = '0';
+      $('qualityInfo').textContent = ''; $('compareAdd').textContent = 'Comparar';
       return;
     }
     const maximum = Math.max(1, ...model.visibleZones().map(row => row.score));
     $('areaTitle').textContent = area.zone;
-    $('areaLevelLabel').textContent = `NÍVEIS ${area.lowLv}–${area.highLv} · ${area.mobs.length} MONSTROS`;
+    $('areaLevelLabel').textContent = `REGIÃO · NÍVEIS ${area.lowLv}–${area.highLv}`;
     $('areaBlurb').textContent = area.withSpawns
-      ? `Existem coordenadas C1 para ${area.withSpawns} de ${area.mobs.length} mobs da região.`
-      : 'Os monstros estão listados abaixo; ainda não há coordenadas C1 carregadas para esta área.';
-    $('metrics').innerHTML = `
-      <div class="metric"><small>Eficiência relativa</small><b>${Math.round(100 * area.score / maximum)}/100</b></div>
-      <div class="metric"><small>XP alvo líder</small><b>${fnum(model.expMob(area.rank[0]?.m || area.mobs[0]))}</b></div>
-      <div class="metric"><small>Registros de spawn</small><b>${fnum(area.sites)}</b></div>`;
-    $('qualityInfo').textContent = 'Índice por HP, defesa, XP e ataque. Não representa XP/h medido; concentração refere-se aos registros da fonte C1.';
+      ? `${area.withSpawns} de ${area.mobs.length} monstros têm registros de localização C1.`
+      : 'Sem registros de localização por enquanto. Os monstros e as estimativas continuam disponíveis.';
+    $('metrics').innerHTML = [
+      metric('Índice da área', Math.round(100 * area.score / maximum), { unit: '/100', tone: 'gold' }),
+      metric('XP do líder', fnum(model.expMob(area.rank[0]?.m || area.mobs[0])), { tone: 'positive' }),
+      metric('Registros C1', fnum(area.sites)),
+    ].join('');
+    $('qualityInfo').textContent = 'Índice relativo às áreas da lista; não representa XP/h ou respawn medido.';
     const ranked = area.mobs.map(mob => ({ mob, score: model.mobScore(mob) })).sort((a, b) => b.score - a.score);
     const maximumMob = Math.max(1, ...ranked.map(row => row.score));
-    $('mobsTitle').textContent = 'Todos os monstros da área';
-    $('mobsCount').textContent = area.mobs.length + ' mobs';
-    $('mobList').innerHTML = ranked.map(({ mob, score }) => `
-      <button class="mob-card ${state.mob === mob.id ? 'focus' : ''}" data-mob="${esc(mob.id)}">
+    $('mobsTitle').textContent = 'Escolha seu alvo';
+    $('mobsCount').textContent = `${area.mobs.length} monstros`;
+    $('mobList').innerHTML = ranked.map(({ mob, score }) => {
+      const selected = state.mob === mob.id, index = Math.round(100 * score / maximumMob);
+      return `<button type="button" class="mob-card ${selected ? 'focus' : ''}" data-mob="${esc(mob.id)}" aria-pressed="${selected}">
         <span class="mob-line"><span class="mob-name">${esc(mob.name)}</span><span class="level">Lv ${mob.lv}</span></span>
-        <span class="mob-bits"><span>XP <b class="xp">${fnum(model.expMob(mob))}</b></span><span>HP <b>${fnum(mob.hp * 1.6)}</b></span><span>${state.mode === 'magic' ? 'M.Def' : 'P.Def'} <b>${fnum(model.def(mob))}</b></span></span>
-        <span class="mob-bits"><span>Eficiência <b>${Math.round(100 * score / maximumMob)}/100</b></span><span>${model.countPlaces(mob)} registros C1</span><span class="${mob.defQuality === 'exact' ? '' : 'estimated'}">${mob.defQuality === 'exact' ? 'Def. verificada' : 'Def. estimada'}</span></span>
-      </button>`).join('');
-    $('compareAdd').textContent = state.compare.includes(area.zone) ? '✓ Na comparação' : '＋ Comparar';
+        <span class="mob-stats">${inlineStat('XP / kill', fnum(model.expMob(mob)), { tone: 'positive' })}${inlineStat('HP estimado', fnum(mob.hp * 1.6))}${inlineStat(state.mode === 'magic' ? 'M.Def' : 'P.Def', fnum(model.def(mob)))}</span>
+        <span class="mob-score"><span>Índice na área</span><b>${index}<small>/100</small></b></span><span class="score-track" aria-hidden="true"><span style="width:${index}%"></span></span>
+        <span class="mob-badges">${badge(mob.defQuality === 'exact' ? 'Def. verificada' : 'Def. estimada', { symbol: 'shield', tone: mob.defQuality === 'exact' ? 'neutral' : 'warning' })}${badge(mob.agg ? 'Agressivo' : 'Passivo', { tone: mob.agg ? 'warning' : 'neutral' })}</span>
+        <span class="mob-card-footer"><span>${icon('pin')}${model.countPlaces(mob) ? `${model.countPlaces(mob)} registros C1` : 'Sem posição C1'}</span><span class="mob-action">${icon(selected ? 'check' : 'target')}${selected ? 'Alvo atual' : 'Selecionar'}</span></span>
+      </button>`;
+    }).join('') || emptyMessage('Nenhum monstro nesta área', 'Escolha outra região para continuar.');
+    const compared = state.compare.includes(area.zone);
+    $('compareAdd').innerHTML = `${icon(compared ? 'check' : 'compare')}<span>${compared ? 'Na seleção' : 'Comparar'}</span>`;
+    $('compareAdd').title = compared ? 'Remover esta área da comparação' : 'Adicionar esta área à comparação';
   }
   return { render };
 }
