@@ -1,0 +1,41 @@
+/* Shared foundations. Features consume semantic tokens rather than their own palettes. */
+:root {
+  color-scheme: dark;
+  --bg: #111214;
+  --surface: #191b1f;
+  --surface2: #22252a;
+  --surface-hover: #2a2d33;
+  --surface-input: #131518;
+  --line: #34373e;
+  --line-soft: #292c32;
+  --text: #f2f0eb;
+  --muted: #b5b6bc;
+  --subtle: #92959e;
+  --gold: #edc77c;
+  --gold-soft: #30291e;
+  --gold-line: #7d6740;
+  --mint: #9addb8;
+  --green: #62ba89;
+  --positive-surface: #1b2c23;
+  --positive-line: #355b45;
+  --danger: #efaaa5;
+  --danger-surface: #342326;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --font-xs: .75rem;
+  --font-sm: .8125rem;
+  --font-md: .9375rem;
+  --font-lg: 1.125rem;
+  --font-xl: 1.5rem;
+  --control-height: 42px;
+  --page-width: 1680px;
+  --browser-width: 340px;
+  --target-width: 264px;
+}

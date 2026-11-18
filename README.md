@@ -30,6 +30,8 @@ Para usar outra porta, defina a variável de ambiente `PORT` antes de executar o
 
 ## Estrutura
 
+A nova interface tem navegação **Explorar/Comparar**, personagem e progresso compartilhados, abas **Áreas/Monstros** e um painel contextual para o alvo selecionado. Os padrões e a organização das primeiras três etapas estão em [docs/interface.md](docs/interface.md).
+
 | Local | Responsabilidade |
 | --- | --- |
 | `index.html` | Estrutura semântica da interface, sem lógica ou imagens em base64 |
@@ -44,8 +46,10 @@ Para usar outra porta, defina a variável de ambiente `PORT` antes de executar o
 | `src/features/progress/` | Barra de experiência e painel de mana |
 | `src/features/compare/` | Comparação de áreas |
 | `src/features/map/` | Mapa, heatmap, marcadores e interações de mouse/toque |
+| `src/features/shell/` | Composição das telas, navegação e detalhes contextuais do alvo |
 | `src/assets/maps/` | Imagem local do mapa de Aden |
 | `src/styles/` | Estilos gerais e regras responsivas |
+| `src/styles/tokens.css` | Cores, tipografia, espaçamentos e dimensões compartilhadas |
 | `src/ui/` | Referências ao DOM e eventos dos controles |
 | `scripts/` | Servidor, verificação e build usando apenas Node.js |
 | `tests/` | Testes unitários, integração e resultados de referência da versão original |

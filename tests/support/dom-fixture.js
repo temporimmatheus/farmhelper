@@ -14,6 +14,8 @@ class Element extends EventTarget {
   }
   setAttribute(key, value) { this.attributes.set(key, value); }
   getAttribute(key) { return this.attributes.get(key); }
+  removeAttribute(key) { this.attributes.delete(key); }
+  focus() { globalThis.document.activeElement = this; }
   getBoundingClientRect() { return { left: 0, top: 0, width: this.clientWidth, height: this.clientHeight }; }
   closest(selector) {
     if (selector === 'button') return this.tagName === 'button' ? this : null;

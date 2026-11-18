@@ -1,7 +1,7 @@
 import { $ } from './dom.js';
 import { clamp } from '../core/utils.js';
 
-export function bindControls({ store, model, map, render, renderProgress, sync }) {
+export function bindControls({ store, model, map, render, renderProgress, sync, shell }) {
   const { state } = store;
   let searchTimer;
   const cleanup = [];
@@ -41,6 +41,7 @@ export function bindControls({ store, model, map, render, renderProgress, sync }
   $('search').value = state.query;
   listen($('search'), 'input', event => {
     store.patch({ query: event.target.value });
+    shell.showBrowser('areas');
     clearTimeout(searchTimer);
     searchTimer = setTimeout(() => render({ focus: true }), 100);
   });
@@ -51,12 +52,17 @@ export function bindControls({ store, model, map, render, renderProgress, sync }
     const button = event.target.closest('[data-area],[data-mob],[data-world]');
     if (!button) return;
     if (button.dataset.area && model.zMap.has(button.dataset.area)) {
-      store.patch({ area: button.dataset.area, mob: '' });
+      const fromComparison = shell.view === 'compare';
+      store.patch({ area: button.dataset.area, mob: '', ...(fromComparison ? { query: '', scope: 'all' } : {}) });
+      if (fromComparison) $('search').value = '';
+      shell.closeTarget();
+      shell.showView('explore');
+      shell.showBrowser('mobs');
       render({ focus: true });
     }
     if (button.dataset.mob) {
       const mob = model.MOB.get(button.dataset.mob);
-      if (mob) { store.patch({ area: mob.zone, mob: mob.id }); render({ focus: true }); }
+      if (mob) { store.patch({ area: mob.zone, mob: mob.id }); render({ focus: true }); shell.openTarget(); }
     }
     if (button.dataset.world) map.setWorld(button.dataset.world);
   });

@@ -3,227 +3,101 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#111214">
     <meta name="description" content="Farm Helper: áreas de farm, experiência, mana e spawns para Lineage II C1.">
     <title>Farm Helper · Lineage II C1</title>
     <link rel="icon" href="./favicon.svg?v=2" type="image/svg+xml" sizes="any">
     <link rel="stylesheet" href="./src/styles/index.css">
   </head>
   <body>
+    <a class="skip-link" href="#mainContent">Ir para o conteúdo</a>
     <div class="frame">
-      <header class="top">
+      <header class="app-header">
         <div class="brand">
-          <div class="logo" aria-hidden="true">⚔</div>
-          <div>
-            <div class="eyebrow">Lineage II Reborn · C1</div>
-            <h1>Farm Helper</h1>
-          </div>
+          <img class="logo" src="./favicon.svg" alt="" width="44" height="44">
+          <div><h1>Farm Helper</h1><p class="brand-caption">Lineage II Reborn <span class="chronicle-badge">C1</span></p></div>
         </div>
+        <nav class="primary-nav" aria-label="Navegação principal">
+          <button type="button" id="navExplore" class="nav-link" aria-current="page" aria-controls="exploreView">Explorar</button>
+          <button type="button" id="navCompare" class="nav-link" aria-controls="compareView">Comparar <span class="nav-count" id="compareNavCount" aria-hidden="true">0</span></button>
+        </nav>
         <div class="status">
-          <span class="status-pill" id="sourceBadge">Carregando dados…</span>
-          <button class="quiet-btn" id="reload">↻ Atualizar</button>
+          <span class="status-pill" id="sourceBadge" role="status">Carregando dados…</span>
+          <button type="button" class="quiet-btn" id="reload" title="Atualizar os dados de localização">Atualizar dados</button>
         </div>
       </header>
-      <section class="controls" aria-label="Ajustes de farm">
-        <div class="field">
-          <label for="level">Nível <span style="font-weight:400;opacity:.7">(salvo automaticamente)</span>
-          </label>
-          <input type="number" id="level" value="0" min="0" max="40" inputmode="numeric">
-        </div>
-        <div class="field">
-          <label for="matk">M.Atk</label>
-          <input type="number" id="matk" value="26" min="1" max="99999" inputmode="numeric">
-        </div>
-        <div class="field">
-          <label for="patk">P.Atk</label>
-          <input type="number" id="patk" value="17" min="1" max="99999" inputmode="numeric">
-        </div>
-        <div class="field">
-          <label for="attackMode">Estilo de farm</label>
-          <select id="attackMode">
-            <option value="magic">⚡ Mágico</option>
-            <option value="physical">⚔ Físico</option>
-          </select>
-        </div>
-        <div class="field queryfield">
-          <label for="search">Buscar área ou monstro</label>
-          <div class="search-wrap">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#95b1be" stroke-width="2">
-              <circle cx="11" cy="11" r="8"/>
-              <path d="m20 20-4-4"/>
-            </svg>
-            <input class="search-input" type="search" id="search" placeholder="Ex.: Hook Spider, Elven Forest…" autocomplete="off">
-          </div>
-        </div>
-      </section>
-      <section class="xp-dashboard" aria-label="Experiência e mana">
-        <div class="xp-main">
-          <div class="xp-header">
-            <div>
-              <div class="eyebrow">Progresso do personagem</div>
-              <h2>Nível <span id="xpLevel">0</span>
-                <span class="xp-arrow">→</span>
-                <span id="xpNextLevel">—</span>
-              </h2>
-            </div>
-            <b id="xpPercentLabel" class="xp-percent">0,00%</b>
-          </div>
-          <div class="xp-track" role="progressbar" id="xpProgressBar" aria-label="Experiência do nível" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-            <span id="xpFill">
-            </span>
-          </div>
-          <div class="xp-adjust">
-            <input type="range" id="xpRange" min="0" max="100" step="0.01" value="0" aria-label="Porcentagem de XP">
-            <div class="xp-exact">
-              <input id="xpExact" type="text" inputmode="decimal" min="0" max="100" step="0.01" value="0" aria-label="Porcentagem exata de XP">
-              <span>%</span>
-            </div>
-          </div>
-          <div class="xp-metrics">
-            <div>
-              <span>XP restante</span>
-              <strong id="xpRemaining">—</strong>
-            </div>
-            <div>
-              <span>XP do nível</span>
-              <strong id="xpLevelTotal">—</strong>
-            </div>
-            <div>
-              <span>Mobs até subir</span>
-              <strong id="xpKills">—</strong>
-            </div>
-          </div>
-          <div class="xp-target small" id="xpTarget">Selecione uma área para estimar os mobs restantes.</div>
-        </div>
-        <div class="mp-main">
-          <div class="eyebrow">Consumo da skill</div>
-          <h2>Mana do farm</h2>
-          <div class="mp-inputs">
-            <div class="field">
-              <label for="mpSkill">MP por skill</label>
-              <input type="number" id="mpSkill" min="0" max="9999" step="1" inputmode="numeric" value="15">
-            </div>
-            <div class="field">
-              <label for="castsKill">Skills por kill</label>
-              <input type="number" id="castsKill" min="1" max="30" step="1" inputmode="numeric" value="2">
-            </div>
-          </div>
-          <div class="mp-summary">
-            <div>
-              <span>MP por kill</span>
-              <strong id="mpPerKill">30 MP</strong>
-            </div>
-            <div>
-              <span>MP até subir</span>
-              <strong id="mpRemaining">—</strong>
-            </div>
-            <div>
-              <span>XP/MP do alvo</span>
-              <strong id="xpPerMp">—</strong>
-            </div>
-          </div>
-          <p class="small mp-note">Skills por kill é uma média configurável, não uma previsão de dano. O consumo é bruto, sem regeneração de MP.</p>
-        </div>
-      </section>
-      <div class="layout">
-        <aside class="panel areas-panel">
-          <div class="panelhead">
-            <div>
-              <h2>Melhores áreas</h2>
-              <div class="small" id="areaCount">Calculando…</div>
-            </div>
-            <div class="eyebrow">Índice</div>
-          </div>
-          <div class="area-head">
-            <div class="segmented">
-              <button type="button" id="recommendedBtn" class="active">Perto do nível</button>
-              <button type="button" id="allBtn">Todas</button>
-            </div>
-            <span class="small" id="areaCoverage">
-            </span>
-          </div>
-          <div class="areas" id="areaList">
-          </div>
-        </aside>
-        <section class="panel map-panel">
-          <div class="mapbar">
-            <div>
-              <div class="eyebrow">Região selecionada</div>
-              <h2 id="mapTitle">Mapa do C1</h2>
-            </div>
-            <div class="mapbar-right">
-              <button class="tab on" data-world="aden">Aden</button>
-              <button class="tab" data-world="elmore">Elmore</button>
-            </div>
-          </div>
-          <div class="viewport" id="mapViewport" tabindex="0" aria-label="Mapa: um dedo arrasta, dois dedos aproximam e afastam">
-            <div class="world" id="mapWorld">
-              <img id="mapImage" src="./src/assets/maps/aden.png" alt="Mapa original do Chronicle 1" draggable="false">
-              <canvas id="heatCanvas" width="700" height="629">
-              </canvas>
-              <div class="pins" id="mapPins">
-              </div>
-            </div>
-            <div class="map-buttons">
-              <button type="button" id="zoomIn" title="Aproximar">+</button>
-              <button type="button" id="zoomOut" title="Afastar">−</button>
-              <button type="button" id="zoomFit" title="Enquadrar mapa">⤢</button>
-              <button type="button" id="zoomArea" title="Enquadrar área">⌖</button>
-            </div>
-            <div class="map-overlay-bottom">
-              <div class="maphint">Manchas mostram concentrações. Ao aproximar, pontos pequenos destacam posições fixas.</div>
-            </div>
-          </div>
-          <div class="mapfoot">
-            <span id="mapStatus">Selecione uma área para localizar os spawns.</span>
-            <strong id="mapCoverage">Mapa C1</strong>
-          </div>
-          <div class="spotinfo" id="hotspot">
-          </div>
-        </section>
-        <aside class="panel details">
-          <div class="panelhead">
-            <h2>Área e monstros</h2>
-            <button class="quiet-btn" id="compareAdd">＋ Comparar</button>
-          </div>
-          <div class="details-scroll">
-            <div class="details-main">
-              <div class="eyebrow" id="areaLevelLabel">FARM POR ÁREA</div>
-              <h3 id="areaTitle">Selecione uma área</h3>
-              <p class="note" id="areaBlurb">Os mobs da área aparecem aqui, sem esconder entradas atrás de filtros técnicos.</p>
-              <div class="metrics" id="metrics">
-              </div>
-              <p class="qualitynote" id="qualityInfo">
-              </p>
-              <div class="divline">
-              </div>
-              <div class="moblist-title">
-                <strong id="mobsTitle">Monstros da área</strong>
-                <span class="small" id="mobsCount">
-                </span>
-              </div>
-              <div class="moblist" id="mobList">
-              </div>
-            </div>
-          </div>
-        </aside>
-        <section class="compareout" id="comparePanel">
-          <div class="panelhead" style="padding:0 0 10px;border:0">
-            <h2>Comparar duas áreas</h2>
-            <button class="quiet-btn" id="compareClose">Fechar</button>
-          </div>
-          <div class="compare-grid" id="compareGrid">
-          </div>
-        </section>
-      </div>
-      <footer class="footer">
-        <strong>Eficiência comparativa, não XP/h real. XP e MP usam a configuração informada.</strong> O índice considera XP, HP, M.Def ou P.Def, nível do personagem e concentração de registros C1. O valor de HP ×1,6 é uma hipótese baseada em testes da comunidade. Sem skill, velocidade, bônus, respawn real e concorrência, não é possível medir XP por hora com precisão. Os spawns são do C1 histórico e podem diferir do Reborn. <details style="margin:8px auto">
-        <summary>Fontes e limitações</summary>
-        <p style="margin-top:8px">Dados do catálogo da versão anterior, com defesas individuais onde verificadas e referências por nível nos demais mobs. Spawns: <a href="https://github.com/master-toma/l2datapack" target="_blank" rel="noopener">Master Toma · datapack C1</a>. A projeção dos pontos na imagem do mapa é aproximada e a intensidade representa registros e territórios, não número garantido de monstros ativos. A fórmula de dano do C1 também depende de skill, Spiritshots, buffs e resistências; por isso calculamos um índice relativo.</p>
-      </details>
-    </footer>
-  </div>
-  <script type="module" src="./src/main.js">
-  </script>
-</body>
-</html>
 
+      <main id="mainContent" tabindex="-1">
+        <section class="character-bar" aria-labelledby="characterTitle">
+          <div class="character-caption"><span class="eyebrow">Seu personagem</span><h2 id="characterTitle">Configuração de farm</h2><span class="small">Salvo automaticamente</span></div>
+          <div class="controls">
+            <div class="field"><label for="level">Nível</label><input type="number" id="level" value="0" min="0" max="40" inputmode="numeric"></div>
+            <div class="field"><label for="attackMode">Estilo de combate</label><select id="attackMode"><option value="magic">Mágico</option><option value="physical">Físico</option></select></div>
+            <div class="field"><label for="matk">M.Atk</label><input type="number" id="matk" value="26" min="1" max="99999" inputmode="numeric"></div>
+            <div class="field"><label for="patk">P.Atk</label><input type="number" id="patk" value="17" min="1" max="99999" inputmode="numeric"></div>
+          </div>
+        </section>
+
+        <section class="xp-dashboard" aria-label="Experiência e mana do personagem">
+          <div class="xp-main">
+            <div class="xp-header"><div><div class="eyebrow">Experiência</div><h2>Nível <span id="xpLevel">0</span> <span class="xp-arrow" aria-hidden="true">→</span> <span id="xpNextLevel">—</span></h2></div><b id="xpPercentLabel" class="xp-percent">0,00%</b></div>
+            <div class="xp-track" role="progressbar" id="xpProgressBar" aria-label="Experiência do nível" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="xpFill"></span></div>
+            <div class="xp-adjust"><input type="range" id="xpRange" min="0" max="100" step="0.01" value="0" aria-label="Porcentagem de XP"><div class="xp-exact"><input id="xpExact" type="text" inputmode="decimal" value="0" aria-label="Porcentagem exata de XP"><span>%</span></div></div>
+            <div class="xp-metrics"><div><span>XP restante</span><strong id="xpRemaining">—</strong></div><div><span>XP do nível</span><strong id="xpLevelTotal">—</strong></div><div><span>Mobs até subir</span><strong id="xpKills">—</strong></div></div>
+            <p class="xp-target small" id="xpTarget">Informe seu nível para estimar os mobs restantes.</p>
+          </div>
+          <div class="mp-main">
+            <div class="eyebrow">Consumo da skill</div><h2>Mana do farm</h2>
+            <div class="mp-inputs"><div class="field"><label for="mpSkill">MP por skill</label><input type="number" id="mpSkill" min="0" max="9999" step="1" inputmode="numeric" value="15"></div><div class="field"><label for="castsKill">Skills por kill</label><input type="number" id="castsKill" min="1" max="30" step="1" inputmode="numeric" value="2"></div></div>
+            <div class="mp-summary"><div><span>MP por kill</span><strong id="mpPerKill">30 MP</strong></div><div><span>MP até subir</span><strong id="mpRemaining">—</strong></div><div><span>XP/MP do alvo</span><strong id="xpPerMp">—</strong></div></div>
+            <p class="small mp-note">Consumo bruto, sem regeneração. Skills por kill é uma média informada por você.</p>
+          </div>
+        </section>
+
+        <section id="exploreView" aria-labelledby="exploreTitle">
+          <div class="view-heading"><div><span class="eyebrow">Atlas de farm</span><h2 id="exploreTitle">Encontre seu próximo alvo</h2><p class="muted">Escolha uma região, conheça os monstros e explore suas localizações.</p></div><span class="view-tag">Chronicle 1</span></div>
+          <div class="workspace" id="exploreWorkspace">
+            <aside class="panel browser-panel" aria-label="Exploração de áreas e monstros">
+              <div class="browser-search field"><label for="search">Buscar área ou monstro</label><div class="search-wrap"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="10.5" cy="10.5" r="7.5"/><path d="m16 16 5 5"/></svg><input class="search-input" type="search" id="search" placeholder="Nome da área ou do monstro" autocomplete="off"></div></div>
+              <div class="browser-tabs" role="tablist" aria-label="Conteúdo da exploração"><button type="button" id="browserAreas" role="tab" aria-selected="true" aria-controls="browseAreas" tabindex="0">Áreas</button><button type="button" id="browserMobs" role="tab" aria-selected="false" aria-controls="browseMobs" tabindex="-1">Monstros</button></div>
+              <section id="browseAreas" role="tabpanel" aria-labelledby="browserAreas" tabindex="0">
+                <div class="panelhead"><div><h3>Melhores áreas</h3><div class="small" id="areaCount">Calculando…</div></div></div>
+                <div class="area-head"><div class="segmented"><button type="button" id="recommendedBtn" class="active">Perto do nível</button><button type="button" id="allBtn">Todas</button></div><span class="small" id="areaCoverage"></span></div>
+                <div class="areas" id="areaList"></div>
+              </section>
+              <section id="browseMobs" role="tabpanel" aria-labelledby="browserMobs" tabindex="0" hidden>
+                <div class="panelhead"><h3>Área e monstros</h3><button type="button" class="quiet-btn" id="compareAdd">＋ Comparar</button></div>
+                <div class="details-scroll"><div class="details-main"><div class="eyebrow" id="areaLevelLabel">FARM POR ÁREA</div><h3 id="areaTitle">Selecione uma área</h3><p class="note" id="areaBlurb">Escolha uma região para ver seus monstros.</p><div class="metrics" id="metrics"></div><p class="qualitynote" id="qualityInfo"></p><div class="divline"></div><div class="moblist-title"><strong id="mobsTitle">Monstros da área</strong><span class="small" id="mobsCount"></span></div><div class="moblist" id="mobList"></div></div></div>
+              </section>
+            </aside>
+
+            <section class="panel map-panel" aria-labelledby="mapTitle">
+              <div class="mapbar"><div><div class="eyebrow">Região selecionada</div><h3 id="mapTitle">Mapa do C1</h3></div><div class="mapbar-right" role="group" aria-label="Mundo do mapa"><button type="button" class="tab on" data-world="aden">Aden</button><button type="button" class="tab" data-world="elmore">Elmore</button></div></div>
+              <div class="viewport" id="mapViewport" tabindex="0" aria-label="Mapa interativo. Arraste para mover. Use mais e menos para zoom ou zero para enquadrar.">
+                <div class="world" id="mapWorld"><img id="mapImage" src="./src/assets/maps/aden.png" alt="Mapa original do Chronicle 1" draggable="false"><canvas id="heatCanvas" width="700" height="629" aria-hidden="true"></canvas><div class="pins" id="mapPins" aria-hidden="true"></div></div>
+                <div class="map-buttons"><button type="button" id="zoomIn" title="Aproximar" aria-label="Aproximar mapa">+</button><button type="button" id="zoomOut" title="Afastar" aria-label="Afastar mapa">−</button><button type="button" id="zoomFit" title="Enquadrar mapa" aria-label="Enquadrar mapa inteiro">⤢</button><button type="button" id="zoomArea" title="Enquadrar área" aria-label="Enquadrar área selecionada">⌖</button></div>
+                <div class="map-overlay-bottom"><div class="maphint">Arraste para explorar · role para aproximar</div></div>
+              </div>
+              <div class="mapfoot"><span id="mapStatus">Selecione uma área para localizar os spawns.</span><strong id="mapCoverage">Mapa C1</strong></div><div class="spotinfo" id="hotspot"></div>
+            </section>
+
+            <aside class="panel target-panel" id="targetPanel" aria-labelledby="targetName" hidden>
+              <div class="panelhead"><span class="eyebrow">Alvo selecionado</span><button type="button" id="targetClose" class="icon-btn" aria-label="Fechar detalhes do alvo" title="Fechar detalhes">×</button></div>
+              <div class="target-body"><span class="level" id="targetLevel"></span><h3 id="targetName"></h3><p class="small" id="targetZone"></p><dl class="target-stats"><div><dt>XP por kill</dt><dd class="xp" id="targetXp"></dd></div><div><dt>HP estimado</dt><dd id="targetHp"></dd></div><div><dt id="targetDefenseLabel">M.Def</dt><dd id="targetDefense"></dd></div><div><dt>Registros C1</dt><dd id="targetSpawns"></dd></div></dl><p class="qualitynote">Este alvo é a referência do painel de XP e mana.</p></div>
+            </aside>
+          </div>
+        </section>
+
+        <section id="compareView" aria-labelledby="compareTitle" hidden>
+          <div class="view-heading"><div><span class="eyebrow">Planeje seu farm</span><h2 id="compareTitle">Compare suas opções</h2><p class="muted">Selecione até duas áreas na aba Monstros para comparar seus indicadores.</p></div><button type="button" class="quiet-btn" id="compareExplore">Explorar áreas</button></div>
+          <p class="small compare-notice" id="compareNotice" role="status"></p>
+          <div class="empty-state panel" id="compareEmpty"><span class="eyebrow">Sua seleção começa no mapa</span><h3>Quais regiões você quer comparar?</h3><p>Em Explorar, escolha uma área, abra Monstros e clique em Comparar.</p><button type="button" class="primary-btn" id="compareEmptyExplore">Escolher uma área</button></div>
+          <section class="compareout panel" id="comparePanel" aria-label="Áreas selecionadas"><div class="panelhead"><h3>Áreas lado a lado</h3><button type="button" class="quiet-btn" id="compareClose">Limpar seleção</button></div><div class="compare-grid" id="compareGrid"></div></section>
+        </section>
+      </main>
+
+      <footer class="footer"><span>Farm Helper <span class="muted">/</span> Chronicle 1</span><details><summary>Fontes e limites das estimativas</summary><p>Eficiência comparativa, não XP/h real. XP e MP usam a configuração informada. HP ×1,6 é uma hipótese da versão original. Defesas estimadas estão identificadas. Spawns históricos podem diferir do Reborn e a projeção no mapa é aproximada. Fonte: <a href="https://github.com/master-toma/l2datapack" target="_blank" rel="noopener">Master Toma · datapack C1</a>.</p></details></footer>
+    </div>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>

@@ -12,6 +12,7 @@ import { createCompareView } from './features/compare/compare-view.js';
 import { createProgressView } from './features/progress/progress-view.js';
 import { createMapController } from './features/map/map-controller.js';
 import { bindControls } from './ui/bindings.js';
+import { createShellController } from './features/shell/shell-controller.js';
 
 export function createApp({ storage = createStorage(), source } = {}) {
   const store = createCharacterStore(storage);
@@ -24,6 +25,7 @@ export function createApp({ storage = createStorage(), source } = {}) {
   const compare = createCompareView(context);
   const progress = createProgressView(context);
   const map = createMapController({ ...context, repository, updateWorld: world => store.patch({ world }) });
+  const shell = createShellController(context);
   function render(options = {}) {
     const visible = model.visibleZones();
     if (!visible.some(area => area.zone === state.area)) store.patch({ area: visible[0]?.zone || '', mob: '' });
@@ -34,6 +36,7 @@ export function createApp({ storage = createStorage(), source } = {}) {
       if (matches.length === 1 && matches[0].zone === state.area) store.patch({ mob: matches[0].id });
     }
     areas.render(); details.render(); progress.render(); map.render(options); compare.render();
+    shell.update();
     store.save();
   }
   const sync = createSpawnSync({
@@ -42,9 +45,9 @@ export function createApp({ storage = createStorage(), source } = {}) {
     onBusy(busy) { $('reload').disabled = busy; },
     onComplete() { render({ focus: true }); },
   });
-  const unbind = bindControls({ store, model, map, render, renderProgress: progress.render, sync });
+  const unbind = bindControls({ store, model, map, render, renderProgress: progress.render, sync, shell });
   map.initialize();
   render({ focus: true }); sync.refresh();
   const timer = setTimeout(() => sync.sync(), 450);
-  return { destroy() { clearTimeout(timer); unbind(); map.destroy(); } };
+  return { destroy() { clearTimeout(timer); unbind(); shell.destroy(); map.destroy(); } };
 }
