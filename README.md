@@ -30,7 +30,7 @@ Para usar outra porta, defina a variável de ambiente `PORT` antes de executar o
 
 ## Estrutura
 
-A nova interface tem navegação **Explorar/Comparar**, personagem e progresso compartilhados, abas **Áreas/Monstros**, cartões de alvos, controles de camadas do mapa e comparação por indicadores alinhados. Os padrões e a organização das cinco primeiras etapas estão em [docs/interface.md](docs/interface.md).
+A nova interface tem navegação **Explorar/Comparar**, personagem e progresso compartilhados, cartões de alvos, camadas do mapa e comparação por indicadores alinhados. No celular, há navegação **Áreas/Mapa/Monstros**, resumo compacto de XP/MP e detalhes em painel inferior. Os padrões e a organização das seis primeiras etapas estão em [docs/interface.md](docs/interface.md).
 
 | Local | Responsabilidade |
 | --- | --- |
@@ -47,6 +47,7 @@ A nova interface tem navegação **Explorar/Comparar**, personagem e progresso c
 | `src/features/compare/` | Comparação de áreas |
 | `src/features/map/` | Mapa, heatmap, marcadores e interações de mouse/toque |
 | `src/features/shell/` | Composição das telas, navegação e detalhes contextuais do alvo |
+| `src/features/mobile/` | Navegação mobile, configuração expansível e painel inferior do alvo |
 | `src/assets/maps/` | Imagem local do mapa de Aden |
 | `src/styles/` | Estilos gerais e regras responsivas |
 | `src/styles/tokens.css` | Cores, tipografia, espaçamentos e dimensões compartilhadas |

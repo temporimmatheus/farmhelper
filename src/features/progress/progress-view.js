@@ -29,6 +29,18 @@ export function createProgressView({ state, model }) {
     $('progressTargetName').textContent = !configured ? 'Informe seu nível para começar' : target?.name || 'Nenhum alvo disponível';
     $('progressTargetMode').textContent = state.mob ? 'Selecionado' : 'Automático';
     $('progressTargetMode').className = `badge ${state.mob ? 'badge--gold' : ''}`;
+    $('mobileLevelSummary').textContent = configured ? `Nível ${state.level}` : 'Defina seu nível';
+    $('mobileXpPercent').textContent = configured ? state.xpPercent.toFixed(2).replace('.', ',') + '%' : '—';
+    $('mobileXpFill').style.width = (configured ? state.xpPercent : 0) + '%';
+    $('mobileXpBar').setAttribute('aria-valuenow', configured ? state.xpPercent.toFixed(2) : '0');
+    $('mobileXpRemaining').textContent = configured ? fnum(remaining) : '—';
+    $('mobileMpSkill').textContent = fnum(state.mpSkill);
+    $('mobileMpPerKill').textContent = fnum(mpPerKill);
+    $('mobileKills').textContent = kills === null ? '—' : fnum(kills);
+    $('mobileMpRemaining').textContent = mpRemaining === null ? '—' : fnum(mpRemaining);
+    $('mobileTargetName').textContent = $('progressTargetName').textContent;
+    $('mobileTargetName').title = $('progressTargetName').textContent;
+    $('mobileTargetReopen').hidden = !state.mob || !target;
     $('xpTarget').textContent = !configured
       ? 'Informe seu nível (1–40) para ver a XP restante e o custo de mana até subir.'
       : target

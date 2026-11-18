@@ -7,3 +7,4 @@
 @import '../features/map/map.css';
 @import '../features/progress/progress.css';
 @import './responsive.css';
+@import '../features/mobile/mobile.css';

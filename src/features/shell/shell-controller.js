@@ -1,6 +1,7 @@
 import { $ } from '../../ui/dom.js';
 import { fnum } from '../../core/utils.js';
 import { badge } from '../../ui/components.js';
+import { createMobileController } from '../mobile/mobile-controller.js';
 
 // Navigation belongs to the shell; character, formulas and saved selections stay in the store.
 const VIEWS = {
@@ -17,6 +18,7 @@ export function createShellController({ state, model }) {
   let inspectorOpen = Boolean(state.mob);
   const cleanups = [];
   const layoutChanged = () => window.dispatchEvent(new Event('resize'));
+  const mobile = createMobileController({ initialSection: state.mob ? 'mobs' : 'areas', onNavigate: showMobileSection, onShowCompare: () => showView('compare'), onOpenTarget: openTarget, onCloseTarget: () => closeTarget({ focus: true }) });
   function listen(id, event, handler) {
     const element = $(id);
     element.addEventListener(event, handler);
@@ -25,16 +27,20 @@ export function createShellController({ state, model }) {
   function showView(name) {
     if (!Object.hasOwn(VIEWS, name)) return;
     currentView = name;
+    if (name !== 'explore' && mobile.isMobile) inspectorOpen = false;
     for (const [key, view] of Object.entries(VIEWS)) {
       $(view.panel).hidden = key !== name;
       if (key === name) $(view.button).setAttribute('aria-current', 'page');
       else $(view.button).removeAttribute('aria-current');
     }
+    mobile.setView(name);
+    if (name !== 'explore' && mobile.isMobile) update();
     layoutChanged();
   }
   function showBrowser(name) {
     if (!Object.hasOwn(BROWSER_TABS, name)) return;
     currentBrowser = name;
+    mobile.setSection(name);
     for (const [key, tab] of Object.entries(BROWSER_TABS)) {
       const selected = key === name;
       $(tab.panel).hidden = !selected;
@@ -43,9 +49,16 @@ export function createShellController({ state, model }) {
     }
     layoutChanged();
   }
+  function showMobileSection(name) {
+    showView('explore');
+    if (name === 'map') mobile.setSection('map');
+    else showBrowser(name);
+  }
   function update() {
     const comparisons = state.compare.filter(zone => model.zMap.has(zone));
     $('compareNavCount').textContent = comparisons.length;
+    $('mobileCompareCount').textContent = comparisons.length;
+    $('mobileCompareOpen').setAttribute('aria-label', `Comparar áreas: ${comparisons.length} selecionadas`);
     $('compareEmpty').hidden = comparisons.length > 0;
     const notice = `${comparisons.length} de 2 áreas selecionadas`;
     if ($('compareNotice').textContent !== notice) $('compareNotice').textContent = notice;
@@ -67,12 +80,16 @@ export function createShellController({ state, model }) {
       $('targetSpawns').textContent = fnum(model.countPlaces(target));
       $('targetTraits').innerHTML = badge(target.agg ? 'Agressivo' : 'Passivo', { tone: target.agg ? 'warning' : 'neutral' }) + badge(target.defQuality === 'exact' ? 'Def. verificada' : 'Def. estimada', { tone: target.defQuality === 'exact' ? 'neutral' : 'warning', symbol: 'shield' });
     }
+    mobile.setTargetVisible(visible);
     if (changed) layoutChanged();
   }
-  function openTarget() { inspectorOpen = true; showView('explore'); showBrowser('mobs'); update(); }
+  function openTarget() { inspectorOpen = true; showView('explore'); if (!mobile.isMobile || mobile.section !== 'map') showBrowser('mobs'); update(); }
   function closeTarget({ focus = false } = {}) {
     inspectorOpen = false; update();
-    if (focus) $(BROWSER_TABS[currentBrowser].button).focus();
+    if (focus) {
+      if (mobile.isMobile) mobile.focusNavigation();
+      else $(BROWSER_TABS[currentBrowser].button).focus();
+    }
   }
   for (const [name, view] of Object.entries(VIEWS)) listen(view.button, 'click', () => showView(name));
   for (const [name, tab] of Object.entries(BROWSER_TABS)) {
@@ -88,6 +105,7 @@ export function createShellController({ state, model }) {
   }
   for (const id of ['compareExplore', 'compareEmptyExplore']) listen(id, 'click', () => { showView('explore'); showBrowser('areas'); $('search').focus(); });
   listen('targetClose', 'click', () => closeTarget({ focus: true }));
+  mobile.initialize();
   showView('explore'); showBrowser(state.mob ? 'mobs' : 'areas'); update();
-  return { showView, showBrowser, openTarget, closeTarget, update, get view() { return currentView; }, destroy() { cleanups.forEach(fn => fn()); } };
+  return { showView, showBrowser, openTarget, closeTarget, update, get view() { return currentView; }, destroy() { cleanups.forEach(fn => fn()); mobile.destroy(); } };
 }

@@ -1,6 +1,6 @@
-# Interface do Farm Helper — etapas 1 a 5
+# Interface do Farm Helper — etapas 1 a 6
 
-Esta entrega implementa a arquitetura das telas, os padrões visuais, a navegação, os componentes e a apresentação do mapa e da comparação. A navegação mobile dedicada, a validação visual completa e as otimizações de desempenho continuam nas etapas seguintes.
+Esta entrega implementa a arquitetura das telas, os padrões visuais, a navegação, os componentes, a apresentação do mapa e da comparação e a experiência mobile dedicada. A validação visual completa em navegadores reais e as otimizações de desempenho continuam nas etapas seguintes.
 
 ## 1. Arquitetura das telas
 
@@ -8,10 +8,10 @@ Esta entrega implementa a arquitetura das telas, os padrões visuais, a navegaç
 | --- | --- | --- |
 | Cabeçalho | Marca, Explorar/Comparar e estado da sincronização | Elementos reorganizados em linhas, sem remover controles |
 | Personagem | Configuração em faixa horizontal | Campos em duas colunas |
-| Progresso | Experiência e mana em dois painéis | Painéis empilhados, presentes nas duas telas |
-| Explorar | Navegador à esquerda e mapa flexível à direita | Navegador e mapa empilhados |
-| Navegador | Busca comum e abas Áreas/Monstros | Mesmas abas, listas com altura limitada |
-| Alvo selecionado | Terceira coluna a partir de 1440 px; abaixo do mapa em larguras intermediárias | Painel abaixo do mapa |
+| Progresso | Experiência e mana em dois painéis | Resumo compacto fixo durante a rolagem e edição expansível |
+| Explorar | Navegador à esquerda e mapa flexível à direita | Uma seção por vez: Áreas, Mapa ou Monstros |
+| Navegador | Busca comum e abas Áreas/Monstros | Navegação inferior com listas e rolagem preservadas |
+| Alvo selecionado | Terceira coluna a partir de 1440 px; abaixo do mapa em larguras intermediárias | Painel inferior modal com o mesmo conteúdo |
 | Comparar | Tela própria com seleção compartilhada | Mesmo conteúdo, uma coluna |
 
 Selecionar uma área abre sua aba Monstros. Selecionar um monstro abre seus detalhes e o mantém como referência para XP e MP. Fechar os detalhes libera espaço sem apagar a seleção. Os painéis de progresso ficam fora das duas telas, portanto continuam disponíveis ao alternar entre elas.
@@ -87,8 +87,30 @@ Os destaques consideram maior índice, maior XP/kill, menor número de kills e m
 
 As estimativas de kills, MP e XP/MP usam `calculateProgress`, a mesma função do painel de progresso. No nível zero elas ficam indisponíveis. Com consumo de MP igual a zero, XP/MP aparece como indisponível em vez de infinito. O índice é arredondado a uma casa para comparação visual e os empates consideram essa precisão. As fórmulas do ranking não foram alteradas.
 
+## 6. Experiência mobile dedicada
+
+O modo mobile é ativado até 760 px de largura ou até 1024 px em dispositivos com ponteiro de toque. A mudança de modo responde à largura atual, inclusive ao girar o aparelho. Não usa identificação por navegador.
+
+### Navegação e edição
+
+A barra inferior oferece **Áreas**, **Mapa** e **Monstros**, mostrando uma seção por vez. As três abas usam `aria-selected`, foco alternado e teclado com setas, Home e End. Os elementos permanecem montados: a rolagem interna das listas, o mundo e o zoom do mapa são mantidos ao trocar abas. O enquadramento solicitado enquanto o mapa está oculto é aplicado quando ele volta a ter dimensões visíveis.
+
+O resumo compacto acompanha a rolagem e mostra nível, porcentagem/barra de XP, XP restante, MP por skill, MP por kill, kills/MP até subir e alvo de referência. Ele usa o resultado da mesma função que alimenta o painel completo. O botão **Configurar** abre os campos existentes de personagem, experiência e mana, sem criar inputs ou configurações duplicados. Há também um atalho para Comparar com contador de áreas selecionadas.
+
+A altura real do resumo informa o espaço das listas. A navegação inferior e o painel do alvo respeitam as áreas seguras do aparelho. Campos usam fonte de 16 px no modo mobile. Em janelas de pouca altura, o resumo reduz informações secundárias para liberar espaço.
+
+### Painel inferior do alvo
+
+O controlador mobile move o mesmo painel de detalhes para um `<dialog>` nativo. A abertura modal mantém o foco dentro do painel e torna o restante da página inerte. O botão de fechar, Esc e o toque fora da área do painel fecham a apresentação, preservando o monstro selecionado como referência de XP/MP. O foco retorna à aba de origem. O atalho **Detalhes** no resumo permite reabrir a seleção.
+
+Ao voltar para desktop, o conteúdo retorna à posição original no workspace. O modal é fechado, a rolagem da página é liberada e os painéis completos de configuração/progresso reaparecem. Ao destruir a aplicação, listeners de mídia e observadores também são removidos.
+
+Os arquivos `src/features/mobile/mobile-controller.js` e `mobile.css` concentram esse comportamento. A camada mobile controla apresentação e navegação; não mantém uma segunda cópia do personagem nem modifica as fórmulas.
+
 ## Verificação
 
 Execute `npm run verify`. Além dos fluxos anteriores, os testes cobrem estados dos cartões, remoção individual de áreas, alinhamento dos indicadores, camadas do mapa, enquadramentos distintos, territórios sem posições fixas e estimativas com nível zero ou MP zero.
+
+Os fluxos mobile cobrem resumo e edição compartilhados, abas, conservação de rolagem/zoom, fechamento do painel inferior, retorno de foco, acesso à comparação, transição desktop/mobile, enquadramento após ocultação e limpeza do modal e dos listeners.
 
 Os testes usam o adaptador de DOM do projeto. A conferência de layout em navegador real deve incluir larguras de 360, 768, 1024 e 1440 px, zoom do navegador em 200%, região com nome longo e navegação por teclado.

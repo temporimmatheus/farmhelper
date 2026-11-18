@@ -11,6 +11,7 @@ export function createMapController({ state, model, repository, updateWorld }) {
   let signature = '', points = [], hotspots = [], pinsTimer;
   let showHeat = true, showPositions = true;
   let hasFixedPositions = false;
+  let pendingFocus = null;
 
   function updateMarkerHint() {
     $('targetLegend').hidden = !state.mob || !hasFixedPositions || !showPositions || zoom < 2.4;
@@ -41,6 +42,13 @@ export function createMapController({ state, model, repository, updateWorld }) {
     return Math.max(.001, Math.min((viewport.clientWidth - 18) / map.w, (viewport.clientHeight - 18) / map.h));
   }
   function updateTransform() {
+    if (viewport.clientWidth <= 0 || viewport.clientHeight <= 0) return;
+    if (pendingFocus) {
+      const options = pendingFocus;
+      pendingFocus = null;
+      render({ focus: true, ...options });
+      return;
+    }
     const scale = baseScale() * zoom;
     worldElement.style.transform = `translate(${viewport.clientWidth / 2 - center.x * scale}px,${viewport.clientHeight / 2 - center.y * scale}px) scale(${scale})`;
     worldElement.style.setProperty('--pin-world-size', `${(4.5 / scale).toFixed(3)}px`);
@@ -65,6 +73,7 @@ export function createMapController({ state, model, repository, updateWorld }) {
   }
   function schedulePaintPins() { clearTimeout(pinsTimer); pinsTimer = setTimeout(paintPins, 110); }
   function fitMap() {
+    pendingFocus = null;
     const map = maps[state.world];
     center = { x: map.w / 2, y: map.h / 2 }; zoom = 1;
     updateTransform(); schedulePaintPins();
@@ -81,7 +90,10 @@ export function createMapController({ state, model, repository, updateWorld }) {
       $('mapStatus').textContent = points.length ? `${fnum(points.length)} amostras de localização · toque numa mancha` : 'Sem coordenadas C1 para esta área. Os mobs continuam listados à direita.';
       $('mapCoverage').textContent = points.length ? `${hotspots.length} concentrações` : 'Apenas catálogo';
     }
-    if (focus && points.length) {
+    if (focus && (viewport.clientWidth <= 0 || viewport.clientHeight <= 0)) {
+      pendingFocus = { targetOnly };
+    } else if (focus && points.length) {
+      pendingFocus = null;
       const selected = targetOnly && state.mob ? points.filter(point => point.m.id === state.mob) : [];
       const targets = selected.length ? selected : points;
       const xs = targets.map(point => point.x), ys = targets.map(point => point.y);

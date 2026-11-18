@@ -2,7 +2,7 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#111214">
     <meta name="description" content="Farm Helper: áreas de farm, experiência, mana e spawns para Lineage II C1.">
     <title>Farm Helper · Lineage II C1</title>
@@ -11,7 +11,7 @@
   </head>
   <body>
     <a class="skip-link" href="#mainContent">Ir para o conteúdo</a>
-    <div class="frame">
+    <div class="frame" id="appShell">
       <header class="app-header">
         <div class="brand">
           <img class="logo" src="./favicon.svg" alt="" width="44" height="44">
@@ -28,7 +28,14 @@
       </header>
 
       <main id="mainContent" tabindex="-1">
-        <section class="character-bar" aria-labelledby="characterTitle">
+        <section class="mobile-summary" id="mobileSummary" aria-label="Resumo de experiência e mana" hidden>
+          <div class="mobile-summary-head"><strong id="mobileLevelSummary">Defina seu nível</strong><span class="mobile-xp-percent" id="mobileXpPercent">—</span><button type="button" class="icon-btn mobile-compare-button" id="mobileCompareOpen" aria-label="Abrir comparação de áreas"><svg class="ui-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8 3v18M16 3v18M4 7l4-4 4 4m0 10 4 4 4-4"/></svg><span id="mobileCompareCount" class="mobile-compare-count" aria-hidden="true">0</span></button><button type="button" class="quiet-btn" id="mobileSettingsToggle" aria-expanded="false" aria-controls="characterBar progressDashboard">Configurar</button></div>
+          <div class="mobile-xp-track" id="mobileXpBar" role="progressbar" aria-label="Resumo: experiência do nível" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="mobileXpFill"></span></div>
+          <div class="mobile-summary-stats"><div><span>XP restante</span><strong id="mobileXpRemaining">—</strong></div><div><span>MP / skill</span><strong class="mana-value" id="mobileMpSkill">15</strong></div><div><span>MP / kill</span><strong class="mana-value" id="mobileMpPerKill">30</strong></div></div>
+          <div class="mobile-summary-context"><span>Até subir: <b id="mobileKills">—</b> mobs</span><span><b id="mobileMpRemaining">—</b> MP</span></div>
+          <div class="mobile-summary-reference"><span id="mobileTargetName">Informe seu nível para começar</span><button type="button" id="mobileTargetReopen" aria-label="Abrir detalhes do alvo selecionado" hidden>Detalhes</button></div>
+        </section>
+        <section class="character-bar" id="characterBar" aria-labelledby="characterTitle">
           <div class="character-caption"><span class="eyebrow">Seu personagem</span><h2 id="characterTitle">Configuração de farm</h2><span class="small">Salvo automaticamente</span></div>
           <div class="controls">
             <div class="field"><label for="level">Nível</label><input type="number" id="level" value="0" min="0" max="40" inputmode="numeric"></div>
@@ -38,7 +45,7 @@
           </div>
         </section>
 
-        <section class="xp-dashboard" aria-label="Experiência e mana do personagem">
+        <section class="xp-dashboard" id="progressDashboard" aria-label="Experiência e mana do personagem">
           <div class="xp-main">
             <div class="xp-header"><div><div class="eyebrow">Experiência</div><h2>Nível <span id="xpLevel">0</span> <span class="xp-arrow" aria-hidden="true">→</span> <span id="xpNextLevel">—</span></h2></div><b id="xpPercentLabel" class="xp-percent">0,00%</b></div>
             <div class="xp-track" role="progressbar" id="xpProgressBar" aria-label="Experiência do nível" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="xpFill"></span></div>
@@ -57,8 +64,13 @@
 
         <section id="exploreView" aria-labelledby="exploreTitle">
           <div class="view-heading"><div><span class="eyebrow">Atlas de farm</span><h2 id="exploreTitle">Encontre seu próximo alvo</h2><p class="muted">Escolha uma região, conheça os monstros e explore suas localizações.</p></div><span class="view-tag">Chronicle 1</span></div>
+          <nav class="mobile-navigation" id="mobileNavigation" role="tablist" aria-label="Explorar no celular" hidden>
+            <button type="button" id="mobileAreasTab" role="tab" aria-selected="true" aria-controls="browseAreas" tabindex="0"><svg class="ui-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg><span>Áreas</span></button>
+            <button type="button" id="mobileMapTab" role="tab" aria-selected="false" aria-controls="mapPanel" tabindex="-1"><svg class="ui-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m3 5 6-2 6 2 6-2v16l-6 2-6-2-6 2V5Zm6-2v16m6-14v16"/></svg><span>Mapa</span></button>
+            <button type="button" id="mobileMobsTab" role="tab" aria-selected="false" aria-controls="browseMobs" tabindex="-1"><svg class="ui-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></svg><span>Monstros</span></button>
+          </nav>
           <div class="workspace" id="exploreWorkspace">
-            <aside class="panel browser-panel" aria-label="Exploração de áreas e monstros">
+            <aside class="panel browser-panel" id="browserPanel" aria-label="Exploração de áreas e monstros">
               <div class="browser-search field"><label for="search">Buscar área ou monstro</label><div class="search-wrap"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="10.5" cy="10.5" r="7.5"/><path d="m16 16 5 5"/></svg><input class="search-input" type="search" id="search" placeholder="Nome da área ou do monstro" autocomplete="off"></div></div>
               <div class="browser-tabs" role="tablist" aria-label="Conteúdo da exploração"><button type="button" id="browserAreas" role="tab" aria-selected="true" aria-controls="browseAreas" tabindex="0">Áreas</button><button type="button" id="browserMobs" role="tab" aria-selected="false" aria-controls="browseMobs" tabindex="-1">Monstros</button></div>
               <section id="browseAreas" role="tabpanel" aria-labelledby="browserAreas" tabindex="0">
@@ -68,11 +80,11 @@
               </section>
               <section id="browseMobs" role="tabpanel" aria-labelledby="browserMobs" tabindex="0" hidden>
                 <div class="panelhead"><h3>Área e monstros</h3><button type="button" class="quiet-btn" id="compareAdd">＋ Comparar</button></div>
-                <div class="details-scroll"><div class="details-main"><div class="eyebrow" id="areaLevelLabel">FARM POR ÁREA</div><h3 id="areaTitle">Selecione uma área</h3><p class="note" id="areaBlurb">Escolha uma região para ver seus monstros.</p><div class="metrics" id="metrics"></div><p class="qualitynote" id="qualityInfo"></p><div class="divline"></div><div class="moblist-title"><strong id="mobsTitle">Monstros da área</strong><span class="small" id="mobsCount"></span></div><div class="moblist" id="mobList"></div></div></div>
+                <div class="details-scroll" id="mobScroll"><div class="details-main"><div class="eyebrow" id="areaLevelLabel">FARM POR ÁREA</div><h3 id="areaTitle">Selecione uma área</h3><p class="note" id="areaBlurb">Escolha uma região para ver seus monstros.</p><div class="metrics" id="metrics"></div><p class="qualitynote" id="qualityInfo"></p><div class="divline"></div><div class="moblist-title"><strong id="mobsTitle">Monstros da área</strong><span class="small" id="mobsCount"></span></div><div class="moblist" id="mobList"></div></div></div>
               </section>
             </aside>
 
-            <section class="panel map-panel" aria-labelledby="mapTitle">
+            <section class="panel map-panel" id="mapPanel" aria-labelledby="mapTitle">
               <div class="mapbar"><div><div class="eyebrow">Região selecionada</div><h3 id="mapTitle">Mapa do C1</h3></div><div class="mapbar-right" role="group" aria-label="Mundo do mapa"><button type="button" class="tab on" data-world="aden">Aden</button><button type="button" class="tab" data-world="elmore">Elmore</button></div></div>
               <div class="map-toolbar"><div class="map-fit-controls" role="group" aria-label="Enquadramento do mapa"><button type="button" class="quiet-btn" id="zoomFit" title="Enquadrar mapa inteiro"><svg class="ui-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></svg><span>Mapa</span></button><button type="button" class="quiet-btn" id="zoomArea" title="Enquadrar toda a região selecionada"><svg class="ui-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 1 1 14 0Z"/><circle cx="12" cy="10" r="2.5"/></svg><span>Região</span></button><button type="button" class="quiet-btn" id="zoomTarget" title="Enquadrar o alvo selecionado" disabled><svg class="ui-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></svg><span>Alvo</span></button></div><div class="map-layers" role="group" aria-label="Camadas do mapa"><button type="button" class="layer-toggle" id="toggleHeat" aria-pressed="true"><svg class="ui-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m12 3 10 6-10 6L2 9l10-6Zm-9 11 9 5 9-5M3 18l9 5 9-5"/></svg><span>Concentrações</span></button><button type="button" class="layer-toggle" id="toggleSpawns" aria-pressed="true"><svg class="ui-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 1 1 14 0Z"/><circle cx="12" cy="10" r="2.5"/></svg><span>Posições</span></button></div></div>
               <div class="map-selection"><span class="selection-dot" id="mapSelectionDot" aria-hidden="true"></span><span id="mapSelectionName">Todos os monstros da região</span><span class="small" id="mapPointHint">Aproxime para ver posições fixas</span></div>
@@ -99,6 +111,7 @@
           <div class="empty-state panel" id="compareEmpty"><span class="eyebrow">Sua seleção começa no mapa</span><h3>Quais regiões você quer comparar?</h3><p>Em Explorar, escolha uma área, abra Monstros e clique em Comparar.</p><button type="button" class="primary-btn" id="compareEmptyExplore">Escolher uma área</button></div>
           <section class="compareout panel" id="comparePanel" aria-label="Áreas selecionadas"><div class="panelhead"><h3>Áreas lado a lado</h3><button type="button" class="quiet-btn" id="compareClose">Limpar seleção</button></div><div class="compare-grid" id="compareGrid"></div><div class="compare-summary"><span id="compareSummary">Escolha duas áreas para comparar.</span></div><div id="compareMetrics" hidden></div><p class="compare-method">O índice é comparativo, não XP/h real. Mana e kills usam o alvo líder de cada área e a mesma média de skills informada por você. Campos sem estimativa aparecem como —.</p></section>
         </section>
+        <dialog class="mobile-target-sheet" id="mobileTargetSheet" aria-labelledby="targetName" aria-describedby="targetZone"></dialog>
       </main>
 
       <footer class="footer"><span>Farm Helper <span class="muted">/</span> Chronicle 1</span><details><summary>Fontes e limites das estimativas</summary><p>Eficiência comparativa, não XP/h real. XP e MP usam a configuração informada. HP ×1,6 é uma hipótese da versão original. Defesas estimadas estão identificadas. Spawns históricos podem diferir do Reborn e a projeção no mapa é aproximada. Fonte: <a href="https://github.com/master-toma/l2datapack" target="_blank" rel="noopener">Master Toma · datapack C1</a>.</p></details></footer>
