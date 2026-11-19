@@ -1,4 +1,6 @@
-export const MOBS = [
+import { IMPORTED_MOBS } from './imported-monsters.js';
+
+const BASE_MOBS = [
   {
     "id": "m001",
     "lv": 1,
@@ -3038,4 +3040,23 @@ export const MOBS = [
     "link": "https://l2sanctum.net/wiki/c1/monsters/dre-vanul-warrior",
     "dataStatus": "verified"
   }
+];
+
+const normalizeName = value => String(value).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+const curatedNames = new Set(BASE_MOBS.map(mob => normalizeName(mob.name)));
+const importedByName = new Map();
+for (const mob of IMPORTED_MOBS) {
+  const key = normalizeName(mob.name);
+  const current = importedByName.get(key) || { points: [], areas: [] };
+  current.points.push(...(mob.spawnData?.points || []));
+  current.areas.push(...(mob.spawnData?.areas || []));
+  importedByName.set(key, current);
+}
+const curatedMobs = BASE_MOBS.map(mob => {
+  const spawns = importedByName.get(normalizeName(mob.name));
+  return spawns ? { ...mob, spawnData: { ...spawns, source: 'Local C1 datapack' } } : mob;
+});
+export const MOBS = [
+  ...curatedMobs,
+  ...IMPORTED_MOBS.filter(mob => !curatedNames.has(normalizeName(mob.name))),
 ];

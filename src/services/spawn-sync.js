@@ -14,7 +14,9 @@ export async function fetchText(url, { timeout = 18000, fetchImpl = globalThis.f
 
 export function createSpawnSource({ fetchImpl = globalThis.fetch } = {}) {
   const read = url => fetchText(url, { fetchImpl });
-  const isSpawn = path => /(?:^|\/)npcpos(?:\/|[._-])/i.test(path) && /\.(?:pos|txt|npcpos)$/i.test(path);
+  const isSpawn = path => /(?:^|\/)npcpos(?:\/|[._-])/i.test(path)
+    && !/(?:^|\/)99_customs(?:\/|$)/i.test(path)
+    && /\.(?:pos|txt|npcpos)$/i.test(path);
   return {
     async listFiles() {
       try {
@@ -60,11 +62,15 @@ export function createSpawnSync({ repository, storage, monsters, source = create
           if (done % 6 === 0) onStatus(`Sincronizando C1 · ${done}/${files.length}`, 'loading');
         }
       }));
-      const valid = texts.filter(Boolean), territories = new Map();
-      for (const text of valid) parseTerritories(text, territories);
+      const valid = texts.flatMap((text, index) => text ? [{ text, path: files[index] }] : []);
+      const territories = new Map();
+      for (const file of valid) parseTerritories(file.text, territories);
       let matched = 0;
       for (let i = 0; i < valid.length; i++) {
-        matched += repository.incorporate(parseRows(valid[i], territories));
+        const parts = valid[i].path.replaceAll('\\', '/').split('/');
+        const npcPosIndex = parts.findIndex(part => part.toLowerCase() === 'npcpos');
+        const sourceRegion = npcPosIndex >= 0 ? parts[npcPosIndex + 1]?.toLowerCase() : undefined;
+        matched += repository.incorporate(parseRows(valid[i].text, territories, sourceRegion));
         if (i % 12 === 0) await new Promise(resolve => setTimeout(resolve, 0));
       }
       if (!matched) throw new Error('Nenhum mob associado aos arquivos C1');

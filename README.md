@@ -19,6 +19,7 @@ Use o servidor em vez de abrir `index.html` com duplo clique: os módulos ES pre
 | Comando | Função |
 | --- | --- |
 | `npm run dev` | Inicia o servidor local na porta 5173 |
+| `npm run import:c1 -- "<caminho>"` | Importa monstros e bosses de um datapack C1 local autorizado |
 | `npm run check` | Verifica a sintaxe e os imports dos módulos |
 | `npm test` | Executa os testes unitários e de regressão |
 | `npm run test:integration` | Verifica a montagem da aplicação e os fluxos dos controles |
@@ -62,6 +63,7 @@ O domínio não acessa o DOM ou a rede. Os serviços recebem suas dependências 
 ## Como evoluir
 
 - **Novos monstros:** edite `src/data/monsters.js`, mantendo os IDs únicos. Áreas são agrupadas automaticamente pelo campo `zone`.
+- **Importar um catálogo C1:** execute `npm run import:c1 -- "C:\caminho\para\o\datapack"` com uma cópia autorizada que contenha `script\NpcData` e `script\NpcPos` (ou passe diretamente a pasta `script`). O importador inclui templates de monstros/bosses que aparecem nos arquivos `.pos`, junto das localizações fixas e territórios encontrados, agrupa-os pela pasta de região e grava o resultado em `src/data/imported-monsters.js`. Os 202 registros atuais prevalecem em caso de nomes repetidos. A agressividade não inferível fica marcada como desconhecida. O diretório `99_customs` é ignorado.
 - **Novas fórmulas:** altere `src/domain/farm-model.js` ou `src/domain/progress.js`. Atualize os testes de referência somente se a mudança no resultado for intencional.
 - **Outra fonte de spawns:** implemente `listFiles()` e `getFile(path)` e injete a fonte em `createApp({ source })` ou no serviço de sincronização.
 - **Novo painel:** crie uma pasta em `src/features/`, adicione a estrutura ao HTML e conecte a renderização em `src/app.js`.

@@ -9,25 +9,25 @@ export function parseTerritories(text, output) {
   }
 }
 
-function parseNpcs(text, territory, reference) {
+function parseNpcs(text, territory, reference, sourceRegion) {
   const rows = [];
   const npcs = /npc(?:_ex)?_begin\s*\[([^\]]+)\]([\s\S]*?)npc(?:_ex)?_end/gi;
   for (const npc of text.matchAll(npcs)) {
     const positions = [...npc[2].matchAll(/\bpos\s*=\s*\{\s*(-?\d+)\s*;\s*(-?\d+)\s*;\s*(-?\d+)/gi)];
     if (positions.length) {
-      for (const point of positions) rows.push({ name: npc[1], point: { x: +point[1], y: +point[2], z: +point[3] } });
-    } else if (territory) rows.push({ name: npc[1], area: { vertices: territory, territory: reference } });
+      for (const point of positions) rows.push({ name: npc[1], point: { x: +point[1], y: +point[2], z: +point[3] }, ...(sourceRegion ? { sourceRegion } : {}) });
+    } else if (territory) rows.push({ name: npc[1], area: { vertices: territory, territory: reference }, ...(sourceRegion ? { sourceRegion } : {}) });
   }
   return rows;
 }
 
-export function parseRows(text, territories) {
+export function parseRows(text, territories, sourceRegion) {
   const makers = [...text.matchAll(/npcmaker(?:_ex)?_begin\s*\[([^\]]+)\]([\s\S]*?)npcmaker(?:_ex)?_end/gi)];
-  if (!makers.length) return parseNpcs(text);
+  if (!makers.length) return parseNpcs(text, undefined, undefined, sourceRegion);
   return makers.flatMap(maker => {
     const body = maker[2];
     const reference = body.slice(0, 800).match(/\bterritory\s*=\s*\[?([\w.\-]+)\]?/i)?.[1] || maker[1];
     const territory = territories.get(byName(reference)) || territories.get(byName(maker[1]));
-    return parseNpcs(body, territory, reference);
+    return parseNpcs(body, territory, reference, sourceRegion);
   });
 }

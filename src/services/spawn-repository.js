@@ -18,12 +18,17 @@ export function createSpawnRepository(storage, monsters) {
   const cached = storage.read(STORAGE_KEYS.spawns, {});
   for (const mob of monsters) {
     if (cached && Object.hasOwn(cached, mob.id)) entries.set(mob.id, cleanEntry(cached[mob.id]));
+    else if (mob.spawnData) entries.set(mob.id, cleanEntry(mob.spawnData));
   }
-  const lookup = new Map();
+  const lookup = new Map(), byId = new Map(monsters.map(mob => [mob.id, mob]));
   for (const mob of monsters) {
-    for (const key of new Set([byName(mob.name), byName(mob.name).replace(/^the /, ''), byName(mob.name).replace(/\s+/g, '')])) {
-      if (!lookup.has(key)) lookup.set(key, mob.id);
-      else if (lookup.get(key) !== mob.id) lookup.set(key, null);
+    for (const key of new Set([mob.name, mob.sourceName].filter(Boolean).flatMap(name => {
+      const normalized = byName(name);
+      return [normalized, normalized.replace(/^the /, ''), normalized.replace(/\s+/g, '')];
+    }))) {
+      const ids = lookup.get(key) || new Set();
+      ids.add(mob.id);
+      lookup.set(key, ids);
     }
   }
   const get = id => entries.get(id) || EMPTY;
@@ -32,12 +37,16 @@ export function createSpawnRepository(storage, monsters) {
     let matched = 0;
     const grouping = new Map();
     for (const row of rows) {
-      const id = lookup.get(byName(row.name));
-      if (!id) continue;
-      const group = grouping.get(id) || { points: [], areas: [] };
-      if (validPoint(row.point)) { group.points.push(row.point); matched++; }
-      if (row.area && cleanEntry({ areas: [row.area] }).areas.length) { group.areas.push(row.area); matched++; }
-      grouping.set(id, group);
+      const ids = [...(lookup.get(byName(row.name)) || [])];
+      const matches = row.sourceRegion
+        ? ids.filter(id => !byId.get(id)?.sourceRegion || byId.get(id)?.sourceRegion === row.sourceRegion)
+        : ids.length === 1 ? ids : [];
+      for (const id of matches) {
+        const group = grouping.get(id) || { points: [], areas: [] };
+        if (validPoint(row.point)) { group.points.push(row.point); matched++; }
+        if (row.area && cleanEntry({ areas: [row.area] }).areas.length) { group.areas.push(row.area); matched++; }
+        grouping.set(id, group);
+      }
     }
     for (const [id, group] of grouping) {
       const old = get(id);

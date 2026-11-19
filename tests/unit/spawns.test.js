@@ -31,6 +31,29 @@ test('repository normalizes NPC names, deduplicates and restores valid cache onl
   assert.equal(createSpawnRepository(storage, monsters).get('a').points.length, 1);
 });
 
+test('repository routes duplicate imported NPC classes to their source region', () => {
+  const entries = [
+    { id: 'm-west', name: 'Cave Servant', sourceName: 'cave_servant', sourceRegion: 'west', zone: 'C1 · West' },
+    { id: 'm-east', name: 'Cave Servant', sourceName: 'cave_servant', sourceRegion: 'east', zone: 'C1 · East' },
+  ];
+  const repo = createSpawnRepository(memoryStorage(), entries);
+  repo.incorporate([
+    { name: 'cave_servant', sourceRegion: 'east', point: { x: 1, y: 2 } },
+    { name: 'cave_servant', sourceRegion: 'west', point: { x: 3, y: 4 } },
+  ]);
+  assert.deepEqual(repo.get('m-east').points, [{ x: 1, y: 2 }]);
+  assert.deepEqual(repo.get('m-west').points, [{ x: 3, y: 4 }]);
+});
+
+test('repository seeds imported spawn data when no browser cache exists', () => {
+  const repo = createSpawnRepository(memoryStorage(), [{
+    id: 'imported-mob',
+    name: 'Orc Fighter',
+    spawnData: { points: [{ x: 4, y: 5 }], areas: [], source: 'Local C1 datapack' },
+  }]);
+  assert.deepEqual(repo.get('imported-mob').points, [{ x: 4, y: 5 }]);
+});
+
 test('sync reads all territories first, caches results and skips fresh complete syncs', async () => {
   const storage = memoryStorage();
   const repository = createSpawnRepository(storage, monsters);
@@ -80,7 +103,7 @@ test('public source falls back to CDN for listing and file downloads', async () 
   const source = createSpawnSource({ async fetchImpl(url) {
     urls.push(url);
     if (url.includes('github.com') || url.includes('githubusercontent.com')) throw new Error('offline');
-    return { ok: true, async text() { return url.includes('/flat') ? JSON.stringify({ files: [{ name: '/npcpos/a.pos' }, { name: '/other.txt' }] }) : fixed; } };
+    return { ok: true, async text() { return url.includes('/flat') ? JSON.stringify({ files: [{ name: '/npcpos/a.pos' }, { name: '/npcpos/99_customs/event.pos' }, { name: '/other.txt' }] }) : fixed; } };
   } });
   assert.deepEqual(await source.listFiles(), ['npcpos/a.pos']);
   assert.equal(await source.getFile('npcpos/a.pos'), fixed);

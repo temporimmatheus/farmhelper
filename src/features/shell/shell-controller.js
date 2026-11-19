@@ -78,7 +78,10 @@ export function createShellController({ state, model }) {
       $('targetDefenseLabel').textContent = state.mode === 'magic' ? 'M.Def' : 'P.Def';
       $('targetDefense').textContent = fnum(model.def(target));
       $('targetSpawns').textContent = fnum(model.countPlaces(target));
-      $('targetTraits').innerHTML = badge(target.agg ? 'Agressivo' : 'Passivo', { tone: target.agg ? 'warning' : 'neutral' }) + badge(target.defQuality === 'exact' ? 'Def. verificada' : 'Def. estimada', { tone: target.defQuality === 'exact' ? 'neutral' : 'warning', symbol: 'shield' });
+      const aggression = typeof target.agg === 'boolean'
+        ? badge(target.agg ? 'Agressivo' : 'Passivo', { tone: target.agg ? 'warning' : 'neutral' })
+        : badge('Agressividade n/d');
+      $('targetTraits').innerHTML = aggression + badge(target.defQuality === 'exact' ? 'Def. verificada' : 'Def. estimada', { tone: target.defQuality === 'exact' ? 'neutral' : 'warning', symbol: 'shield' });
     }
     mobile.setTargetVisible(visible);
     if (changed) layoutChanged();

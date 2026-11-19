@@ -34,11 +34,14 @@ export function createDetailsView({ state, model }) {
     $('mobsCount').textContent = `${area.mobs.length} monstros`;
     $('mobList').innerHTML = ranked.map(({ mob, score }) => {
       const selected = state.mob === mob.id, index = Math.round(100 * score / maximumMob);
+      const aggression = typeof mob.agg === 'boolean'
+        ? badge(mob.agg ? 'Agressivo' : 'Passivo', { tone: mob.agg ? 'warning' : 'neutral' })
+        : badge('Agressividade n/d');
       return `<button type="button" class="mob-card ${selected ? 'focus' : ''}" data-mob="${esc(mob.id)}" aria-pressed="${selected}">
         <span class="mob-line"><span class="mob-name">${esc(mob.name)}</span><span class="level">Lv ${mob.lv}</span></span>
         <span class="mob-stats">${inlineStat('XP / kill', fnum(model.expMob(mob)), { tone: 'positive' })}${inlineStat('HP estimado', fnum(mob.hp * 1.6))}${inlineStat(state.mode === 'magic' ? 'M.Def' : 'P.Def', fnum(model.def(mob)))}</span>
         <span class="mob-score"><span>Índice na área</span><b>${index}<small>/100</small></b></span><span class="score-track" aria-hidden="true"><span style="width:${index}%"></span></span>
-        <span class="mob-badges">${badge(mob.defQuality === 'exact' ? 'Def. verificada' : 'Def. estimada', { symbol: 'shield', tone: mob.defQuality === 'exact' ? 'neutral' : 'warning' })}${badge(mob.agg ? 'Agressivo' : 'Passivo', { tone: mob.agg ? 'warning' : 'neutral' })}</span>
+        <span class="mob-badges">${badge(mob.defQuality === 'exact' ? 'Def. verificada' : 'Def. estimada', { symbol: 'shield', tone: mob.defQuality === 'exact' ? 'neutral' : 'warning' })}${aggression}</span>
         <span class="mob-card-footer"><span>${icon('pin')}${model.countPlaces(mob) ? `${model.countPlaces(mob)} registros C1` : 'Sem posição C1'}</span><span class="mob-action">${icon(selected ? 'check' : 'target')}${selected ? 'Alvo atual' : 'Selecionar'}</span></span>
       </button>`;
     }).join('') || emptyMessage('Nenhum monstro nesta área', 'Escolha outra região para continuar.');
