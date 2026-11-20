@@ -21,10 +21,10 @@ export function drawHeatmap(canvas, map, points) {
     const radius = clamp(20 + intensity * 5, 23, 53) * scale;
     const strength = clamp(.38 + intensity * .10, .38, .76);
     const gradient = context.createRadialGradient(x, y, 0, x, y, radius);
-    gradient.addColorStop(0, `rgba(255,186,85,${(strength * .93).toFixed(3)})`);
-    gradient.addColorStop(.27, `rgba(237,214,95,${(strength * .75).toFixed(3)})`);
-    gradient.addColorStop(.6, `rgba(74,222,149,${(strength * .53).toFixed(3)})`);
-    gradient.addColorStop(1, 'rgba(14,137,101,0)');
+    gradient.addColorStop(0, `rgba(82,221,204,${(strength * .93).toFixed(3)})`);
+    gradient.addColorStop(.27, `rgba(73,210,154,${(strength * .75).toFixed(3)})`);
+    gradient.addColorStop(.6, `rgba(44,160,148,${(strength * .53).toFixed(3)})`);
+    gradient.addColorStop(1, 'rgba(12,82,91,0)');
     context.fillStyle = gradient;
     context.beginPath(); context.arc(x, y, radius, 0, Math.PI * 2); context.fill();
   }

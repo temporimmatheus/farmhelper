@@ -1,14 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <title>Farm Helper</title>
   <defs>
-    <linearGradient id="gold" x1="0" y1="5" x2="0" y2="59" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#f4c45e"/>
-      <stop offset=".28" stop-color="#fff0b6"/>
-      <stop offset="1" stop-color="#e9a343"/>
+    <linearGradient id="accent" x1="0" y1="5" x2="0" y2="59" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#9bf4e7"/>
+      <stop offset=".28" stop-color="#52ddcc"/>
+      <stop offset="1" stop-color="#239f9c"/>
     </linearGradient>
   </defs>
-  <rect width="64" height="64" rx="14" fill="#111820"/>
-  <g fill="url(#gold)">
+  <rect width="64" height="64" rx="14" fill="#07131f"/>
+  <g fill="url(#accent)">
     <path d="M17 5C24 9 28 15 28 23V41C28 49 24 55 17 59C21 53 22 48 22 41V23C22 16 21 11 17 5Z"/>
     <path d="M47 5C40 9 36 15 36 23V41C36 49 40 55 47 59C43 53 42 48 42 41V23C42 16 43 11 47 5Z"/>
   </g>

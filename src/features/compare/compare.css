@@ -1,8 +1,8 @@
 .compareout { display: none; }
 .compareout.visible { display: block; }
 .compare-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; padding: 24px; }
-.compare-box { min-width: 0; display: flex; flex-direction: column; padding: 22px; border: 1px solid var(--line); background: var(--surface-input); border-radius: var(--radius-lg); }
-.compare-box--leading { border-color: var(--gold-line); }
+.compare-box { min-width: 0; display: flex; flex-direction: column; padding: 22px; border: 1px solid var(--line); background: linear-gradient(145deg, #11263a, var(--surface-input) 70%); border-radius: var(--radius-lg); box-shadow: var(--shadow-panel); }
+.compare-box--leading { border-color: var(--accent-line); box-shadow: var(--shadow-panel), inset 0 2px var(--accent); }
 .compare-card-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin: -6px -6px 14px 0; }
 .compare-card-top .icon-btn { min-height: 32px; width: 32px; border-color: transparent; color: var(--subtle); }
 .compare-card-top .icon-btn:hover { color: var(--danger); border-color: var(--line); }
@@ -21,7 +21,7 @@
 .compare-placeholder { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 16px; padding: 32px 24px; border: 1px dashed var(--line); border-radius: var(--radius-lg); text-align: center; }
 .compare-placeholder h3 { font-size: 21px; }
 .compare-placeholder p { color: var(--muted); max-width: 320px; font-size: var(--font-sm); line-height: 1.7; }
-.compare-summary { display: flex; align-items: flex-start; gap: 10px; margin: 0 24px 24px; padding: 14px 16px; background: var(--gold-soft); color: var(--gold); border: 1px solid var(--gold-line); border-radius: var(--radius-md); font-size: var(--font-sm); }
+.compare-summary { display: flex; align-items: flex-start; gap: 10px; margin: 0 24px 24px; padding: 14px 16px; background: var(--accent-soft); color: var(--accent); border: 1px solid var(--accent-line); border-radius: var(--radius-md); font-size: var(--font-sm); }
 .compare-summary .ui-icon { margin-top: 1px; }
 .comparison-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
 .comparison-table caption { text-align: left; padding: 0 24px 16px; color: var(--muted); font-size: var(--font-sm); }

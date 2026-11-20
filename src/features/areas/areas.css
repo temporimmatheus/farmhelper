@@ -3,7 +3,7 @@
 .areas { max-height: 600px; overflow: auto; scrollbar-width: thin; padding: 4px 10px 12px; }
 .area-row { width: 100%; display: grid; grid-template-columns: 24px minmax(0, 1fr) 38px; align-items: center; gap: 9px; padding: 12px 10px; margin-top: 4px; border: 1px solid transparent; border-radius: var(--radius-md); background: transparent; text-align: left; }
 .area-row:hover { background: var(--surface2); border-color: var(--line); }
-.area-row.chosen { background: var(--gold-soft); border-color: var(--gold-line); }
+.area-row.chosen { background: linear-gradient(100deg, var(--accent-soft), #102737); border-color: var(--accent-line); box-shadow: inset 3px 0 var(--accent); }
 .area-num { color: var(--subtle); font-size: .6875rem; font-variant-numeric: tabular-nums; }
 .area-copy { min-width: 0; display: grid; gap: 3px; }
 .area-name { font-size: var(--font-sm); font-weight: 650; line-height: 1.45; overflow-wrap: anywhere; }
@@ -20,9 +20,9 @@
 .metrics .metric-value small { font-size: 10px; }
 .moblist-title { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 14px; font-size: var(--font-sm); }
 .moblist { display: grid; gap: 8px; }
-.mob-card { position: relative; width: 100%; min-width: 0; padding: 12px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface-input); display: grid; gap: 8px; text-align: left; transition: border-color .15s, background-color .15s; }
+.mob-card { position: relative; width: 100%; min-width: 0; padding: 13px; border: 1px solid var(--line-soft); border-radius: var(--radius-md); background: linear-gradient(145deg, #102235, var(--surface-input) 76%); display: grid; gap: 8px; text-align: left; transition: border-color .15s, background-color .15s, transform .15s; }
 .mob-card:hover { background: var(--surface2); border-color: var(--subtle); }
-.mob-card.focus { border-color: var(--gold-line); background: var(--gold-soft); }
+.mob-card.focus { border-color: var(--accent-line); background: linear-gradient(120deg, var(--accent-soft), #0e2330); box-shadow: inset 3px 0 var(--accent); }
 .mob-line { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
 .mob-name { font-size: var(--font-md); font-weight: 650; line-height: 1.4; overflow-wrap: anywhere; }
 .mob-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; border-block: 1px solid var(--line-soft); }
@@ -30,7 +30,7 @@
 .mob-score b { color: var(--gold); font-size: 14px; font-variant-numeric: tabular-nums; }
 .mob-score small { margin-left: 2px; font-weight: 400; color: var(--subtle); font-size: 10px; }
 .score-track { display: block; height: 4px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
-.score-track > span { display: block; height: 100%; background: var(--gold); border-radius: inherit; }
+.score-track > span { display: block; height: 100%; background: linear-gradient(90deg, var(--accent-strong), var(--accent)); border-radius: inherit; }
 .mob-badges { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
 .mob-card-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: .625rem; color: var(--subtle); }
 .mob-card-footer > span { display: inline-flex; align-items: center; gap: 5px; }
