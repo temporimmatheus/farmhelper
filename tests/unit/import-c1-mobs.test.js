@@ -19,13 +19,13 @@ test('ignores malformed templates and parses classes from spawn records', () => 
 });
 
 test('builds one record per spawned monster and region, excluding custom spawns', () => {
-  const npcPos = 'C:\\datapack\\script\\NpcPos';
+  const npcPos = join('datapack', 'script', 'NpcPos');
   const catalog = buildImportedCatalog(
     [{ path: 'NpcData/warriors/00001_orc_fighter.npc', text: '[orc_fighter]\nlevel=8\nacquire_exp_rate=120\norg_hp=180\nbase_defend=50\nbase_magic_defend=40' }],
     [
-      { path: `${npcPos}\\01_talking_island_town\\16_24.pos`, text: 'npc_begin [orc_fighter] pos={1;2;3;0} npc_end' },
-      { path: `${npcPos}\\01_talking_island_town\\16_25.pos`, text: 'npc_begin [orc_fighter] pos=anywhere npc_end' },
-      { path: `${npcPos}\\99_customs\\event.pos`, text: 'npc_begin [orc_fighter] pos=anywhere npc_end' },
+      { path: join(npcPos, '01_talking_island_town', '16_24.pos'), text: 'npc_begin [orc_fighter] pos={1;2;3;0} npc_end' },
+      { path: join(npcPos, '01_talking_island_town', '16_25.pos'), text: 'npc_begin [orc_fighter] pos=anywhere npc_end' },
+      { path: join(npcPos, '99_customs', 'event.pos'), text: 'npc_begin [orc_fighter] pos=anywhere npc_end' },
     ],
     npcPos,
   );
