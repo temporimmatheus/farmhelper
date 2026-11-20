@@ -1,5 +1,3 @@
-const EFFECTIVE_HP_FACTOR = 1.6;
-
 function actionEstimate(hp, damageMin, damageMax) {
   if (![hp, damageMin, damageMax].every(Number.isFinite) || hp <= 0 || damageMin <= 0 || damageMax <= 0) return null;
   const min = Math.max(1, Math.ceil(hp / damageMax));
@@ -14,7 +12,7 @@ function actionEstimate(hp, damageMin, damageMax) {
 
 export function estimateMobCombat(state, mob) {
   if (!mob || !Number.isFinite(mob.hp) || mob.hp <= 0) return null;
-  const hp = mob.hp * EFFECTIVE_HP_FACTOR;
+  const hp = mob.hp;
   if (state.mode === 'physical') {
     const attack = Number(state.patk);
     const defenses = [mob.pLo, mob.pHi].filter(value => Number.isFinite(value) && value > 0);

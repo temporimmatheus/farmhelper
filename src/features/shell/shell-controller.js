@@ -87,7 +87,7 @@ export function createShellController({ state, model }) {
         ? `${locationSummary.join(' · ')}. Os spawns podem diferir do servidor atual.`
         : 'Sem registros de localização C1 para este monstro.';
       $('targetXp').textContent = fnum(model.expMob(target));
-      $('targetHp').textContent = fnum(target.hp * 1.6);
+      $('targetHp').textContent = fnum(target.hp);
       $('targetDefenseLabel').textContent = state.mode === 'magic' ? 'M.Def' : 'P.Def';
       $('targetDefense').textContent = fnum(model.def(target));
       $('targetSpawns').textContent = fnum(model.countPlaces(target));
