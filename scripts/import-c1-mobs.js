@@ -42,15 +42,15 @@ function field(text, key) {
 export function parseNpcTemplate(text) {
   const name = text.match(/^\s*\[([^\]]+)\]\s*$/m)?.[1]?.trim();
   const level = field(text, 'level');
-  const xp = field(text, 'acquire_exp_rate');
+  const expRate = field(text, 'acquire_exp_rate');
   const hp = field(text, 'org_hp');
   const physicalDefense = field(text, 'base_defend');
   const magicDefense = field(text, 'base_magic_defend');
-  if (!name || level === null || xp === null || hp === null) return null;
+  if (!name || level === null || expRate === null || hp === null) return null;
   return {
     name,
     level: Math.round(level),
-    xp: Math.floor(xp),
+    xp: Math.round(level * level * expRate),
     hp,
     physicalDefense: physicalDefense ?? 0,
     magicDefense: magicDefense ?? 0,

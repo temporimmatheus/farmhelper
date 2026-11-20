@@ -6,11 +6,12 @@ import { join } from 'node:path';
 import { buildImportedCatalog, importDatapack, parseNpcTemplate, parseSpawnClasses } from '../../scripts/import-c1-mobs.js';
 
 test('parses C1 warrior stats needed by the farm model', () => {
-  const template = parseNpcTemplate(`npc_begin\nwarrior\n545\n[young_keltir]\nlevel=1\nacquire_exp_rate=29.39\norg_hp=41.03\nbase_defend=45.00\nbase_magic_defend=32.00\nnpc_end`);
+  const template = parseNpcTemplate(`npc_begin\nwarrior\n534\n[red_keltir]\nlevel=2\nexp=68.00\nacquire_exp_rate=14.70\norg_hp=41.03\nbase_defend=45.00\nbase_magic_defend=32.00\nnpc_end`);
   assert.deepEqual(template, {
-    name: 'young_keltir', level: 1, xp: 29, hp: 41.03,
+    name: 'red_keltir', level: 2, xp: 59, hp: 41.03,
     physicalDefense: 45, magicDefense: 32,
   });
+  assert.equal(parseNpcTemplate('[karul_bugbear]\nlevel=40\nacquire_exp_rate=1.33\norg_hp=966.58')?.xp, 2128);
 });
 
 test('ignores malformed templates and parses classes from spawn records', () => {
