@@ -26,7 +26,7 @@ export function createDetailsView({ state, model }) {
       metric('Com localização', `${fnum(area.withSpawns)} / ${fnum(area.mobs.length)}`),
     ].join('');
     $('qualityInfo').textContent = model.combatConfigured
-      ? 'Estimativas de combate não incluem críticos, buffs, soulshots ou falhas.'
+      ? 'Fórmulas de dano são provisórias; observações salvas valem apenas para os atributos registrados.'
       : 'No modo mágico, informe o poder da skill para incluir casts nas recomendações.';
     const matchingMobs = area.mobs.filter(mob => matchesQuery(mob.name, state.query));
     const visibleMobs = matchingMobs.length ? matchingMobs : area.mobs;
@@ -39,7 +39,7 @@ export function createDetailsView({ state, model }) {
       const selected = state.mob === mob.id;
       const combat = model.estimateCombat(mob);
       const combatValue = combat
-        ? `${combat.actions.label} ${combat.actionText}`
+        ? `${combat.actions.label} ${combat.actionText}${combat.actionsSource === 'observed' ? ' · observado' : ''}`
         : state.mode === 'magic' ? 'Defina o poder da skill' : 'Estimativa indisponível';
       const locations = model.countPlaces(mob);
       return `<button type="button" class="mob-card ${selected ? 'focus' : ''}" data-mob="${esc(mob.id)}" aria-pressed="${selected}">

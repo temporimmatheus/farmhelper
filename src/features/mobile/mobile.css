@@ -6,6 +6,8 @@
 .mobile-xp-track { height: 5px; margin: 11px 0 12px; border-radius: 5px; overflow: hidden; background: var(--surface-input); }
 .mobile-xp-track > span { display: block; height: 100%; width: 0; background: var(--green); border-radius: inherit; }
 .mobile-summary-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.mobile-summary.physical-mode .mobile-summary-stats { grid-template-columns: 1fr; }
+.mobile-summary.physical-mode .mobile-summary-context { justify-content: flex-start; }
 .mobile-summary-stats > div { min-width: 0; }
 .mobile-summary-stats span { display: block; color: var(--muted); font-size: 10px; }
 .mobile-summary-stats strong { display: block; margin-top: 3px; font-size: 16px; font-weight: 650; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }

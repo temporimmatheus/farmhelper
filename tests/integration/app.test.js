@@ -71,6 +71,38 @@ test('search, delegated monster selection, comparison and map controls remain co
   } finally { app?.destroy(); dom.cleanup(); }
 });
 
+test('combat observations persist per monster and only apply to matching stats', async () => {
+  const dom = installDomFixture(), storage = memoryStorage();
+  let app;
+  try {
+    app = createApp({ storage, source });
+    dom.input('level', 16);
+    dom.input('skillPower', 21);
+    dom.input('search', 'Ratman Spy');
+    await new Promise(resolve => setTimeout(resolve, 140));
+    const mobId = storage.read(STORAGE_KEYS.state).mob;
+    assert.ok(mobId);
+    dom.delegate({ mob: mobId });
+    assert.match(dom.get('targetCombatEstimate').textContent, /2 casts observados por mob/);
+    assert.equal(dom.get('observedDamageMin').value, 218);
+    assert.equal(dom.get('observedDamageMax').value, 218);
+    assert.equal(dom.get('observedActions').value, 2);
+
+    dom.input('observedDamageMin', 220);
+    dom.input('observedDamageMax', 222);
+    dom.input('observedActions', 2);
+    dom.click('saveCombatObservation');
+    assert.match(dom.get('targetCombatEstimate').textContent, /220–222 de dano observado/);
+    assert.ok(storage.read(STORAGE_KEYS.state).combatObservations.some(observation =>
+      observation.mobKey === 'ratman_spy' && observation.attack === 26 && observation.skillPower === 21 && observation.damageMin === 220 && observation.damageMax === 222
+    ));
+
+    dom.input('skillPower', 20);
+    assert.equal(dom.get('observedDamageMin').value, '');
+    assert.match(dom.get('targetCombatEstimate').textContent, /estimados por mob/);
+  } finally { app?.destroy(); dom.cleanup(); }
+});
+
 test('cached map spawns project and render without external services', async () => {
   const dom = installDomFixture();
   const storage = memoryStorage({

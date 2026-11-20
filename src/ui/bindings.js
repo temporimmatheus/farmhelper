@@ -37,6 +37,45 @@ export function bindControls({ store, model, map, render, renderProgress, sync, 
   listen($('xpExact'), 'input', setXp);
   listen($('xpExact'), 'blur', renderProgress);
   listen($('targetLocate'), 'click', () => { shell.showMap(); render({ focus: true, targetOnly: true }); });
+  listen($('saveCombatObservation'), 'click', () => {
+    const mob = model.MOB.get(state.mob);
+    if (!mob) return;
+    const minInput = $('observedDamageMin'), maxInput = $('observedDamageMax'), actionsInput = $('observedActions');
+    const minText = minInput.value.trim(), maxText = maxInput.value.trim(), actionsText = actionsInput.value.trim();
+    const damageMin = minText ? Number(minText) : null;
+    const damageMax = maxText ? Number(maxText) : null;
+    const actions = actionsText ? Number(actionsText) : null;
+    const invalidMin = minText && (!Number.isFinite(damageMin) || damageMin <= 0 || damageMin > 99999);
+    const invalidMax = maxText && (!Number.isFinite(damageMax) || damageMax <= 0 || damageMax > 99999);
+    const invalidRange = Boolean(minText) !== Boolean(maxText) || (damageMin !== null && damageMax !== null && damageMax < damageMin);
+    const invalidActions = actionsText && (!Number.isInteger(actions) || actions <= 0 || actions > 1000);
+    minInput.setAttribute('aria-invalid', String(Boolean(invalidMin || invalidRange)));
+    maxInput.setAttribute('aria-invalid', String(Boolean(invalidMax || invalidRange)));
+    actionsInput.setAttribute('aria-invalid', String(Boolean(invalidActions)));
+    if (invalidMin || invalidMax || invalidRange || invalidActions) {
+      $('combatObservationStatus').textContent = 'Informe dano mínimo/máximo válidos e ações positivas, ou deixe os campos em branco.';
+      return;
+    }
+    const mobKey = mob.sourceName || mob.id;
+    const mode = state.mode;
+    const attack = mode === 'magic' ? state.matk : state.patk;
+    const skillPower = mode === 'magic' ? state.skillPower : 0;
+    const observations = state.combatObservations.filter(observation =>
+      !(observation.mobKey === mobKey && observation.mode === mode && observation.attack === attack && observation.skillPower === skillPower)
+    );
+    if (damageMin !== null || actions !== null) {
+      observations.push({
+        mobKey, mode, attack, skillPower,
+        ...(damageMin !== null ? { damageMin, damageMax } : {}),
+        ...(actions !== null ? { actions } : {}),
+      });
+    }
+    store.patch({ combatObservations: observations });
+    render();
+    $('combatObservationStatus').textContent = damageMin !== null || actions !== null
+      ? 'Observação salva para esta configuração.'
+      : 'Observação removida.';
+  });
   $('attackMode').value = state.mode;
   listen($('attackMode'), 'change', event => { store.patch({ mode: event.target.value }); render(); });
   $('search').value = state.query;

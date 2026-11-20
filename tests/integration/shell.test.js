@@ -58,6 +58,10 @@ test('selecting a monster opens contextual details; closing preserves the XP tar
   assert.equal(dom.get('targetName').textContent, 'Young Red Keltir');
   assert.equal(dom.get('exploreWorkspace').classList.contains('has-target'), true);
   dom.input('attackMode', 'physical', 'change');
+  assert.equal(dom.get('matkField').hidden, true);
+  assert.equal(dom.get('patkField').hidden, false);
+  assert.equal(dom.get('skillPowerField').hidden, true);
+  assert.equal(dom.get('mpPanel').hidden, true);
   assert.equal(dom.get('targetDefenseLabel').textContent, 'P.Def');
   dom.click('targetClose');
   assert.equal(dom.get('targetPanel').hidden, true);

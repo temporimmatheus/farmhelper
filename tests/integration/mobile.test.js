@@ -41,7 +41,7 @@ test('mobile starts with one exploration section and an editable compact XP/MP s
   assert.equal(dom.get('mobileXpPercent').textContent, '50,25%');
 });
 
-test('mobile Areas/Map/Monsters navigation preserves lists and map zoom', t => {
+test('numbered mobile steps preserve lists and map zoom', t => {
   const { dom } = mount(t);
   dom.get('areaList').scrollTop = 170;
   dom.click('mobileMapTab');
@@ -73,11 +73,11 @@ test('mobile navigation supports arrows, Home and End with roving focus', t => {
     assert.equal(event.defaultPrevented, true);
   }
   key('mobileAreasTab', 'ArrowRight');
-  assert.equal(globalThis.document.activeElement, dom.get('mobileMapTab'));
-  assert.equal(dom.get('mobileMapTab').tabIndex, 0);
-  key('mobileMapTab', 'End');
-  assert.equal(dom.get('browseMobs').hidden, false);
-  key('mobileMobsTab', 'Home');
+  assert.equal(globalThis.document.activeElement, dom.get('mobileMobsTab'));
+  assert.equal(dom.get('mobileMobsTab').tabIndex, 0);
+  key('mobileMobsTab', 'End');
+  assert.equal(dom.get('mapPanel').hidden, false);
+  key('mobileMapTab', 'Home');
   assert.equal(dom.get('browseAreas').hidden, false);
   assert.equal(dom.get('mobileAreasTab').tabIndex, 0);
 });

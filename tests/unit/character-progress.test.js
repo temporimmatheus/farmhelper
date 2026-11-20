@@ -48,6 +48,10 @@ test('corrupt JSON, wrong types, infinity and out-of-range values are safe', () 
   assert.equal(state.mpSkill, 15);
   assert.equal(state.xpPercent, 100);
   assert.equal(state.query, '');
+  assert.ok(state.combatObservations.length > 0);
+  assert.equal(sanitizeState({
+    combatObservations: [{ mobKey: '../bad', mode: 'magic', attack: 26, skillPower: 21, damage: 218 }]
+  }).combatObservations.length, 0);
 });
 
 test('blocked storage does not break character updates', () => {

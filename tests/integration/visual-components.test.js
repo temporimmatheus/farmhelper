@@ -26,7 +26,7 @@ test('monster cards prioritize XP, combat actions and locations; target details 
   assert.match(html, /ataques/);
   assert.match(html, /mob-stats/);
   assert.match(dom.get('targetTraits').innerHTML, /Def\. estimada/);
-  assert.match(dom.get('targetCombatEstimate').textContent, /ataques por mob/);
+  assert.match(dom.get('targetCombatEstimate').textContent, /ataques .* por mob/);
   dom.input('level', 17);
   assert.equal(dom.get('progressTargetName').textContent, 'Young Red Keltir');
   assert.equal(dom.get('progressTargetMode').textContent, 'Selecionado');

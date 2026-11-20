@@ -1,6 +1,6 @@
 import { $ } from '../../ui/dom.js';
 
-const TABS = { areas: 'mobileAreasTab', map: 'mobileMapTab', mobs: 'mobileMobsTab' };
+const TABS = { areas: 'mobileAreasTab', mobs: 'mobileMobsTab', map: 'mobileMapTab' };
 const MAP_CONTROLS = ['mapViewport', 'zoomIn', 'zoomOut', 'zoomFit', 'zoomArea', 'zoomTarget', 'toggleHeat', 'toggleSpawns'];
 const CONFIGURATION = ['level', 'matk', 'patk', 'skillPower', 'attackMode', 'xpRange', 'xpExact', 'mpSkill'];
 const MOBILE_MEDIA = '(max-width: 760px), (max-width: 1024px) and (pointer: coarse)';

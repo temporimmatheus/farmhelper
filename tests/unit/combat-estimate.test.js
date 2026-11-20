@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { estimateMobCombat } from '../../src/domain/combat-estimate.js';
+import { sanitizeState } from '../../src/state/character-store.js';
 
 const mob = { hp: 100, pLo: 50, pHi: 50, mRef: 20, defQuality: 'exact' };
 
@@ -33,10 +34,22 @@ test('magic estimate is unavailable until skill power and usable defense are kno
   assert.equal(estimateMobCombat({ mode: 'magic', matk: 100, skillPower: 10, mpSkill: 12 }, { ...mob, mRef: 0 }), null);
 });
 
-test('Ratman Spy empirical case uses base catalog HP and estimates two casts', () => {
-  const ratmanSpy = { hp: 264.34, pLo: 76, pHi: 76, mRef: 55, defQuality: 'ref' };
-  const estimate = estimateMobCombat({ mode: 'magic', matk: 26, skillPower: 21, mpSkill: 15 }, ratmanSpy);
-  assert.equal(estimate.hp, 264.34);
-  assert.deepEqual(estimate.actions, { min: 2, max: 2, expected: 2, label: '~2' });
-  assert.equal(estimate.mpPerMob, 30);
+test('user-reported Ratman observations override formulas only for the matching combat profile', () => {
+  const ratmanSpy = { id: 'spy-1', sourceName: 'ratman_spy', hp: 264.34, pLo: 76, pHi: 76, mRef: 55, defQuality: 'ref' };
+  const ratmanHunter = { id: 'hunter-1', sourceName: 'ratman_hunter', hp: 301.67, pLo: 89, pHi: 89, mRef: 59, defQuality: 'ref' };
+  const state = sanitizeState({ mode: 'magic', matk: 26, skillPower: 21, mpSkill: 15 });
+  const spy = estimateMobCombat(state, ratmanSpy);
+  const hunter = estimateMobCombat(state, ratmanHunter);
+  assert.equal(spy.damageMin, 218);
+  assert.equal(spy.damageMax, 218);
+  assert.equal(spy.damageSource, 'observed');
+  assert.equal(spy.actions.label, '2');
+  assert.equal(spy.actionsSource, 'observed');
+  assert.equal(spy.mpPerMob, 30);
+  assert.equal(hunter.actions.label, '3');
+  assert.equal(hunter.actionsSource, 'observed');
+
+  const otherProfile = estimateMobCombat({ ...state, skillPower: 20 }, ratmanSpy);
+  assert.equal(otherProfile.damageSource, 'formula');
+  assert.equal(otherProfile.actionsSource, 'formula');
 });

@@ -45,6 +45,13 @@
 .target-body { padding: 20px; }
 .target-body h3 { margin: 14px 0 8px; font-size: 22px; overflow-wrap: anywhere; }
 .target-combat { margin: 14px 0; padding: 12px; border: 1px solid var(--gold-line); border-radius: var(--radius-sm); background: var(--gold-soft); color: var(--text); font-size: var(--font-sm); line-height: 1.55; }
+.combat-calibration { margin: 12px 0; padding: 11px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-input); }
+.combat-calibration > summary { color: var(--gold); font-size: var(--font-xs); font-weight: 650; cursor: pointer; }
+.combat-calibration > p { margin: 9px 0; }
+.combat-calibration-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 10px 0; }
+.combat-calibration-fields > :last-child { grid-column: 1 / -1; }
+.combat-calibration [aria-invalid="true"] { border-color: var(--danger); }
+.combat-calibration button { width: 100%; }
 .target-body #targetLocate { width: 100%; }
 .target-badges, .target-traits { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; }
 .target-traits { margin-top: 16px; }

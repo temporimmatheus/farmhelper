@@ -1,6 +1,7 @@
 import { $ } from '../../ui/dom.js';
 import { fnum } from '../../core/utils.js';
 import { badge } from '../../ui/components.js';
+import { getCombatObservation } from '../../domain/combat-estimate.js';
 import { createMobileController } from '../mobile/mobile-controller.js';
 
 // Navigation belongs to the shell; character, formulas and saved selections stay in the store.
@@ -64,6 +65,16 @@ export function createShellController({ state, model }) {
     if ($('compareNotice').textContent !== notice) $('compareNotice').textContent = notice;
     $('recommendedBtn').setAttribute('aria-pressed', String(state.scope === 'near'));
     $('allBtn').setAttribute('aria-pressed', String(state.scope === 'all'));
+    $('matkField').hidden = state.mode === 'physical';
+    $('patkField').hidden = state.mode === 'magic';
+    $('skillPowerField').hidden = state.mode === 'physical';
+    $('mpSkillField').hidden = state.mode === 'physical';
+    $('mpPanel').hidden = state.mode === 'physical';
+    $('progressDashboard').classList.toggle('physical-mode', state.mode === 'physical');
+    $('mobileMpSkillStat').hidden = state.mode === 'physical';
+    $('mobileMpPerMobStat').hidden = state.mode === 'physical';
+    $('mobileMpRemainingStat').hidden = state.mode === 'physical';
+    $('mobileSummary').classList.toggle('physical-mode', state.mode === 'physical');
     const target = model.MOB.get(state.mob);
     const visible = Boolean(inspectorOpen && target && target.zone === state.area);
     const changed = $('targetPanel').hidden === visible;
@@ -74,11 +85,21 @@ export function createShellController({ state, model }) {
       $('targetLevel').textContent = `Nível ${target.lv}`;
       $('targetZone').textContent = target.zone;
       const combat = model.estimateCombat(target);
+      const observation = getCombatObservation(state, target);
+      const damageText = combat && combat.damageMin === combat.damageMax
+        ? fnum(combat.damageMin)
+        : combat ? `${fnum(combat.damageMin)}–${fnum(combat.damageMax)}` : '';
       $('targetCombatEstimate').textContent = combat
-        ? `${combat.actions.label} ${combat.actionText} por mob · ${fnum(combat.damageMin)}–${fnum(combat.damageMax)} de dano estimado por ação${combat.mode === 'magic' ? ` · ${fnum(combat.mpPerMob)} MP por mob` : ''}.`
+        ? `${combat.actions.label} ${combat.actionText} ${combat.actionsSource === 'observed' ? 'observados' : 'estimados'} por mob · ${damageText} de dano ${combat.damageSource === 'observed' ? 'observado' : 'estimado'} por ação${combat.mode === 'magic' ? ` · ${fnum(combat.mpPerMob)} MP por mob` : ''}.`
         : state.mode === 'magic'
           ? 'Informe o poder da skill para estimar casts e mana.'
           : 'Sem dados suficientes para estimar ataques contra este monstro.';
+      $('observedDamageMin').value = observation?.damageMin ?? '';
+      $('observedDamageMax').value = observation?.damageMax ?? '';
+      $('observedActions').value = observation?.actions ?? '';
+      $('combatObservationStatus').textContent = observation
+        ? 'Observação carregada para os atributos atuais.'
+        : 'Nenhuma observação salva para este monstro e configuração.';
       const locations = model.mobData(target);
       const locationSummary = [];
       if (locations.points.length) locationSummary.push(`${fnum(locations.points.length)} coordenadas fixas`);
