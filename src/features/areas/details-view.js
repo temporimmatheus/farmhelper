@@ -1,5 +1,5 @@
 import { $ } from '../../ui/dom.js';
-import { esc, fnum } from '../../core/utils.js';
+import { esc, fnum, matchesQuery } from '../../core/utils.js';
 import { badge, metric, inlineStat, icon, emptyMessage } from '../../ui/components.js';
 
 export function createDetailsView({ state, model }) {
@@ -28,10 +28,14 @@ export function createDetailsView({ state, model }) {
       metric('Registros C1', fnum(area.sites)),
     ].join('');
     $('qualityInfo').textContent = 'Índice relativo às áreas da lista; não representa XP/h ou respawn medido.';
-    const ranked = area.mobs.map(mob => ({ mob, score: model.mobScore(mob) })).sort((a, b) => b.score - a.score);
+    const matchingMobs = area.mobs.filter(mob => matchesQuery(mob.name, state.query));
+    const visibleMobs = matchingMobs.length ? matchingMobs : area.mobs;
+    const ranked = visibleMobs.map(mob => ({ mob, score: model.mobScore(mob) })).sort((a, b) => b.score - a.score);
     const maximumMob = Math.max(1, ...ranked.map(row => row.score));
     $('mobsTitle').textContent = 'Escolha seu alvo';
-    $('mobsCount').textContent = `${area.mobs.length} monstros`;
+    $('mobsCount').textContent = matchingMobs.length && matchingMobs.length < area.mobs.length
+      ? `${matchingMobs.length} de ${area.mobs.length} monstros`
+      : `${area.mobs.length} monstros`;
     $('mobList').innerHTML = ranked.map(({ mob, score }) => {
       const selected = state.mob === mob.id, index = Math.round(100 * score / maximumMob);
       const aggression = typeof mob.agg === 'boolean'

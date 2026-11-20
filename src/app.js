@@ -1,5 +1,5 @@
 import { $ } from './ui/dom.js';
-import { byName } from './core/utils.js';
+import { byName, matchesQuery } from './core/utils.js';
 import { createStorage } from './core/storage.js';
 import { createCharacterStore } from './state/character-store.js';
 import { createSpawnRepository } from './services/spawn-repository.js';
@@ -31,9 +31,8 @@ export function createApp({ storage = createStorage(), source } = {}) {
     if (!visible.some(area => area.zone === state.area)) store.patch({ area: visible[0]?.zone || '', mob: '' });
     const query = byName(state.query);
     if (query) {
-      const exact = MOBS.find(mob => byName(mob.name) === query);
-      const matches = exact ? [exact] : MOBS.filter(mob => byName(mob.name).includes(query));
-      if (matches.length === 1 && matches[0].zone === state.area) store.patch({ mob: matches[0].id });
+      const exactMatches = MOBS.filter(mob => byName(mob.name) === query && mob.zone === state.area);
+      if (exactMatches.length === 1 && state.mob !== exactMatches[0].id) store.patch({ mob: exactMatches[0].id });
     }
     areas.render(); details.render(); progress.render(); map.render(options); compare.render();
     shell.update();

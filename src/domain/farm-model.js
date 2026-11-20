@@ -1,5 +1,5 @@
 import { MOBS } from '../data/monsters.js';
-import { byName } from '../core/utils.js';
+import { byName, matchesQuery } from '../core/utils.js';
 
 /** Relative farm model. Formulas are preserved from the original atlas. */
 export function createFarmModel(state, repository, monsters = MOBS) {
@@ -50,7 +50,7 @@ export function createFarmModel(state, repository, monsters = MOBS) {
     const query = byName(state.query);
     return zones.filter(zone => {
       const mobs = zMap.get(zone);
-      if (query) return byName(zone).includes(query) || mobs.some(m => byName(m.name).includes(query));
+      if (query) return matchesQuery(zone, query) || mobs.some(m => matchesQuery(m.name, query));
       return state.level === 0 || state.scope === 'all' || mobs.some(m => m.lv >= state.level - 4 && m.lv <= state.level + 5);
     }).map(statZone).sort((a, b) => b.score - a.score);
   }

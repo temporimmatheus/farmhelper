@@ -57,6 +57,12 @@ test('search, delegated monster selection, comparison and map controls remain co
     app.destroy();
     app = createApp({ storage, source });
     assert.equal(dom.get('mapWorld').style.height, '750px');
+    dom.input('search', 'Ratman Spy');
+    await new Promise(resolve => setTimeout(resolve, 140));
+    assert.equal(dom.get('browserMobs').getAttribute('aria-selected'), 'true');
+    assert.match(dom.get('mobList').innerHTML, /Ratman Spy/);
+    assert.match(dom.get('mobsCount').textContent, /de/);
+    assert.doesNotMatch(dom.get('mobList').innerHTML, /mob-name">(?!Ratman Spy)[^<]+/);
     dom.input('search', 'nonexistent-monster-123');
     await new Promise(resolve => setTimeout(resolve, 140));
     assert.equal(dom.get('mobList').innerHTML, '');

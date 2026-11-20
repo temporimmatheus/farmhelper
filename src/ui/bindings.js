@@ -1,5 +1,5 @@
 import { $ } from './dom.js';
-import { clamp } from '../core/utils.js';
+import { byName, clamp } from '../core/utils.js';
 
 export function bindControls({ store, model, map, render, renderProgress, sync, shell }) {
   const { state } = store;
@@ -41,7 +41,9 @@ export function bindControls({ store, model, map, render, renderProgress, sync, 
   $('search').value = state.query;
   listen($('search'), 'input', event => {
     store.patch({ query: event.target.value });
-    shell.showBrowser('areas');
+    const query = byName(event.target.value);
+    const exactMobName = model.MOBS.some(mob => byName(mob.name) === query);
+    shell.showBrowser(exactMobName ? 'mobs' : 'areas');
     clearTimeout(searchTimer);
     searchTimer = setTimeout(() => render({ focus: true }), 100);
   });

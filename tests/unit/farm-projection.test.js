@@ -34,6 +34,8 @@ test('monster IDs are unique; searching ignores accents and punctuation', () => 
   const empty = createFarmModel(sanitizeState({ query: 'nothing-exists-here' }), emptyRepository);
   assert.deepEqual(empty.visibleZones(), []);
   assert.equal(empty.statZone('').lowLv, 0);
+  const ratman = createFarmModel(sanitizeState({ query: 'spy ratman' }), emptyRepository);
+  assert.ok(ratman.visibleZones().some(area => area.mobs.some(mob => mob.name === 'Ratman Spy')));
 });
 
 test('map calibration reproduces known Aden and Elmore landmarks', () => {
