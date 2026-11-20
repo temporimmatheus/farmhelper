@@ -73,6 +73,19 @@ export function createShellController({ state, model }) {
       $('targetName').textContent = target.name;
       $('targetLevel').textContent = `Nível ${target.lv}`;
       $('targetZone').textContent = target.zone;
+      const combat = model.estimateCombat(target);
+      $('targetCombatEstimate').textContent = combat
+        ? `${combat.actions.label} ${combat.actionText} por mob · ${fnum(combat.damageMin)}–${fnum(combat.damageMax)} de dano estimado por ação${combat.mode === 'magic' ? ` · ${fnum(combat.mpPerMob)} MP por mob` : ''}.`
+        : state.mode === 'magic'
+          ? 'Informe o poder da skill para estimar casts e mana.'
+          : 'Sem dados suficientes para estimar ataques contra este monstro.';
+      const locations = model.mobData(target);
+      const locationSummary = [];
+      if (locations.points.length) locationSummary.push(`${fnum(locations.points.length)} coordenadas fixas`);
+      if (locations.areas.length) locationSummary.push(`${fnum(locations.areas.length)} territórios aproximados`);
+      $('targetLocationSummary').textContent = locationSummary.length
+        ? `${locationSummary.join(' · ')}. Os spawns podem diferir do servidor atual.`
+        : 'Sem registros de localização C1 para este monstro.';
       $('targetXp').textContent = fnum(model.expMob(target));
       $('targetHp').textContent = fnum(target.hp * 1.6);
       $('targetDefenseLabel').textContent = state.mode === 'magic' ? 'M.Def' : 'P.Def';
@@ -94,6 +107,14 @@ export function createShellController({ state, model }) {
       else $(BROWSER_TABS[currentBrowser].button).focus();
     }
   }
+  function showMap() {
+    showView('explore');
+    if (mobile.isMobile) {
+      inspectorOpen = false;
+      update();
+      mobile.setSection('map');
+    }
+  }
   for (const [name, view] of Object.entries(VIEWS)) listen(view.button, 'click', () => showView(name));
   for (const [name, tab] of Object.entries(BROWSER_TABS)) {
     listen(tab.button, 'click', () => showBrowser(name));
@@ -110,5 +131,5 @@ export function createShellController({ state, model }) {
   listen('targetClose', 'click', () => closeTarget({ focus: true }));
   mobile.initialize();
   showView('explore'); showBrowser(state.mob ? 'mobs' : 'areas'); update();
-  return { showView, showBrowser, openTarget, closeTarget, update, get view() { return currentView; }, destroy() { cleanups.forEach(fn => fn()); mobile.destroy(); } };
+  return { showView, showBrowser, showMap, openTarget, closeTarget, update, get view() { return currentView; }, destroy() { cleanups.forEach(fn => fn()); mobile.destroy(); } };
 }

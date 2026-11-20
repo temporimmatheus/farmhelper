@@ -15,12 +15,12 @@ export function createCompareView({ state, model }) {
       : winner === null
         ? 'As duas áreas têm o mesmo índice comparativo na precisão exibida.'
         : `${entries[winner].area.zone} tem o maior índice comparativo nesta seleção.`;
-    $('compareGrid').innerHTML = entries.map(({ area, target, xp }, index) => `
+    $('compareGrid').innerHTML = entries.map(({ area, target, xp, combat }, index) => `
       <article class="compare-box ${winner === index ? 'compare-box--leading' : ''}">
         <div class="compare-card-top"><span class="eyebrow">Área ${index + 1}</span><button type="button" class="icon-btn" data-remove-compare="${esc(area.zone)}" aria-label="Remover ${esc(area.zone)} da comparação" title="Remover área">${icon('close')}</button></div>
         <h3>${esc(area.zone)}</h3><p class="compare-area-meta">Níveis ${area.lowLv}–${area.highLv} · ${area.mobs.length} monstros</p>
         <div class="compare-score"><div><span>Índice comparativo</span><strong>${format(area.score, 1)}</strong></div>${winner === index ? badge('Maior índice', { tone: 'gold', symbol: 'check' }) : badge('Área selecionada')}</div>
-        <div class="compare-target"><span>Alvo líder estimado</span><strong>${esc(target.name)}</strong><p>Lv ${target.lv} · <b>${fnum(xp)} XP/kill</b></p>${badge(target.defQuality === 'exact' ? 'Def. verificada' : 'Def. estimada', { tone: target.defQuality === 'exact' ? 'neutral' : 'warning', symbol: 'shield' })}</div>
+        <div class="compare-target"><span>Alvo líder estimado</span><strong>${esc(target.name)}</strong><p>Lv ${target.lv} · <b>${fnum(xp)} XP/kill</b>${combat ? ` · ${combat.actions.label} ${combat.actionText}` : ' · Defina o poder da skill'}</p>${badge(target.defQuality === 'exact' ? 'Def. verificada' : 'Def. estimada', { tone: target.defQuality === 'exact' ? 'neutral' : 'warning', symbol: 'shield' })}</div>
         <button type="button" class="quiet-btn" data-area="${esc(area.zone)}">${icon('pin')}Ver no mapa</button>
       </article>`).join('');
     if (entries.length === 1) $('compareGrid').insertAdjacentHTML('beforeend', `<div class="compare-placeholder"><span class="empty-symbol">${icon('compare')}</span><h3>Complete sua comparação</h3><p>Escolha outra área para comparar XP, mana e os alvos líderes.</p><button type="button" class="primary-btn" data-explore="areas">Escolher segunda área ${icon('arrow')}</button></div>`);

@@ -2,7 +2,7 @@ import { $ } from '../../ui/dom.js';
 
 const TABS = { areas: 'mobileAreasTab', map: 'mobileMapTab', mobs: 'mobileMobsTab' };
 const MAP_CONTROLS = ['mapViewport', 'zoomIn', 'zoomOut', 'zoomFit', 'zoomArea', 'zoomTarget', 'toggleHeat', 'toggleSpawns'];
-const CONFIGURATION = ['level', 'matk', 'patk', 'attackMode', 'xpRange', 'xpExact', 'mpSkill', 'castsKill'];
+const CONFIGURATION = ['level', 'matk', 'patk', 'skillPower', 'attackMode', 'xpRange', 'xpExact', 'mpSkill'];
 const MOBILE_MEDIA = '(max-width: 760px), (max-width: 1024px) and (pointer: coarse)';
 
 /** Owns responsive presentation only. It reuses the existing panels, inputs and selected target. */
@@ -40,8 +40,8 @@ export function createMobileController({ initialSection = 'areas', onNavigate, o
     const mobile = media.matches;
     $('mobileSummary').hidden = !mobile;
     $('mobileNavigation').hidden = !mobile || view !== 'explore';
-    $('characterBar').hidden = mobile && !settingsOpen;
-    $('progressDashboard').hidden = mobile && !settingsOpen;
+    $('setupPanel').hidden = mobile && !settingsOpen;
+    if (mobile) $('setupPanel').open = settingsOpen;
     $('mobileSettingsToggle').setAttribute('aria-expanded', String(settingsOpen));
     $('mobileSettingsToggle').textContent = settingsOpen ? 'Fechar edição' : 'Configurar';
     $('browserPanel').hidden = mobile && section === 'map';
@@ -123,7 +123,7 @@ export function createMobileController({ initialSection = 'areas', onNavigate, o
       $('exploreWorkspace').append(targetPanel);
       $('appShell').classList.remove('mobile-mode');
       $('mobileSummary').hidden = true; $('mobileNavigation').hidden = true;
-      $('characterBar').hidden = false; $('progressDashboard').hidden = false;
+      $('setupPanel').hidden = false;
       $('browserPanel').hidden = false; $('mapPanel').hidden = false;
       $('browseAreas').setAttribute('aria-labelledby', 'browserAreas');
       $('browseMobs').setAttribute('aria-labelledby', 'browserMobs');

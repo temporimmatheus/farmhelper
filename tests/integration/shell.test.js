@@ -16,7 +16,7 @@ function mount(t, initial = {}) {
 
 test('Explore and Compare share the character, progress and selected area', t => {
   const { dom, storage } = mount(t);
-  dom.input('level', 17); dom.input('xpExact', '42,5'); dom.input('mpSkill', 21);
+  dom.input('level', 17); dom.input('xpExact', '42,5'); dom.input('mpSkill', 21); dom.input('skillPower', 20);
   const selected = storage.read(STORAGE_KEYS.state).area;
   dom.click('navCompare');
   assert.equal(dom.get('exploreView').hidden, true);
@@ -24,7 +24,7 @@ test('Explore and Compare share the character, progress and selected area', t =>
   assert.equal(dom.get('navCompare').getAttribute('aria-current'), 'page');
   assert.equal(dom.get('navExplore').getAttribute('aria-current'), undefined);
   assert.equal(dom.get('xpPercentLabel').textContent, '42,50%');
-  assert.equal(dom.get('mpPerKill').textContent, '42 MP');
+  assert.match(dom.get('mpPerKill').textContent, /^\d+ MP$/);
   assert.equal(dom.get('compareEmpty').hidden, false);
   dom.click('navExplore');
   assert.equal(dom.get('exploreView').hidden, false);

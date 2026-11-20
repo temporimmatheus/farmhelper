@@ -2,9 +2,9 @@ import { clamp } from '../core/utils.js';
 import { STORAGE_KEYS } from '../core/storage.js';
 
 export const DEFAULT_STATE = Object.freeze({
-  level: 0, matk: 26, patk: 17, mode: 'magic', query: '', scope: 'near',
+  level: 0, matk: 26, patk: 17, skillPower: 0, mode: 'magic', query: '', scope: 'near',
   area: '', mob: '', world: 'aden', compare: Object.freeze([]),
-  xpPercent: 0, mpSkill: 15, castsKill: 2,
+  xpPercent: 0, mpSkill: 15,
 });
 
 export function sanitizeState(value) {
@@ -16,8 +16,8 @@ export function sanitizeState(value) {
     const parsed = Number(raw);
     if (Number.isFinite(parsed)) result[key] = clamp(integer ? Math.round(parsed) : parsed, min, max);
   };
-  number('level', 0, 40); number('matk', 1, 99999); number('patk', 1, 99999);
-  number('xpPercent', 0, 100, false); number('mpSkill', 0, 9999); number('castsKill', 1, 30);
+  number('level', 0, 40); number('matk', 1, 99999); number('patk', 1, 99999); number('skillPower', 0, 9999);
+  number('xpPercent', 0, 100, false); number('mpSkill', 0, 9999);
   for (const key of ['query', 'area', 'mob']) {
     if (typeof input[key] === 'string') result[key] = input[key].slice(0, 300);
   }

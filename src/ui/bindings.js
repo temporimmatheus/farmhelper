@@ -24,8 +24,8 @@ export function bindControls({ store, model, map, render, renderProgress, sync, 
   numericInput('level', 'level', 0, 40);
   numericInput('matk', 'matk', 1, 99999);
   numericInput('patk', 'patk', 1, 99999);
+  numericInput('skillPower', 'skillPower', 0, 9999);
   numericInput('mpSkill', 'mpSkill', 0, 9999);
-  numericInput('castsKill', 'castsKill', 1, 30);
   const setXp = event => {
     const raw = event.target.value.trim();
     const value = Number(raw.replace(',', '.'));
@@ -36,6 +36,7 @@ export function bindControls({ store, model, map, render, renderProgress, sync, 
   listen($('xpRange'), 'input', setXp);
   listen($('xpExact'), 'input', setXp);
   listen($('xpExact'), 'blur', renderProgress);
+  listen($('targetLocate'), 'click', () => { shell.showMap(); render({ focus: true, targetOnly: true }); });
   $('attackMode').value = state.mode;
   listen($('attackMode'), 'change', event => { store.patch({ mode: event.target.value }); render(); });
   $('search').value = state.query;

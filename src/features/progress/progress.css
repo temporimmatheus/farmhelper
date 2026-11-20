@@ -21,3 +21,5 @@
 .mp-inputs .field input { height: 36px; }
 .mp-summary strong { color: var(--mana); }
 .mp-note { margin-top: 15px; line-height: 1.5; }
+.setup-disclosure .xp-dashboard { margin-bottom: 0; }
+.setup-disclosure .mp-inputs { grid-template-columns: 1fr; }

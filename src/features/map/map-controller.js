@@ -14,9 +14,10 @@ export function createMapController({ state, model, repository, updateWorld }) {
   let pendingFocus = null;
 
   function updateMarkerHint() {
+    const targetPoints = state.mob ? points.filter(point => point.m.id === state.mob) : points;
     $('targetLegend').hidden = !state.mob || !hasFixedPositions || !showPositions || zoom < 2.4;
     $('mapPointHint').textContent = !showPositions ? 'Posições fixas ocultas'
-      : !points.length ? 'Sem registros neste mapa'
+      : !targetPoints.length ? (state.mob ? 'Sem registros deste alvo neste mapa' : 'Sem registros neste mapa')
         : !hasFixedPositions ? 'Territórios aproximados, sem posições fixas'
           : zoom < 2.4 ? 'Aproxime para ver posições fixas'
             : state.mob ? 'Posições fixas do alvo em destaque' : 'Posições fixas visíveis';
@@ -24,12 +25,17 @@ export function createMapController({ state, model, repository, updateWorld }) {
 
   function updatePresentation() {
     const target = model.MOB.get(state.mob);
+    const targetPoints = target ? points.filter(point => point.m.id === target.id) : points;
     $('mapSelectionName').textContent = target ? `Alvo · ${target.name}` : 'Todos os monstros da região';
     $('mapSelectionDot').classList.toggle('is-target', Boolean(target));
-    hasFixedPositions = points.some(point => point.kind === 'point' && (!target || point.m.id === target.id));
-    $('mapEmpty').hidden = points.length > 0;
+    hasFixedPositions = targetPoints.some(point => point.kind === 'point');
+    $('mapEmpty').hidden = targetPoints.length > 0;
+    $('mapEmptyTitle').textContent = target ? `Sem registros de ${target.name} neste mapa` : 'Sem localizações carregadas';
+    $('mapEmptyMessage').textContent = target
+      ? 'Alterne entre Aden e Elmore para conferir se há registros neste mapa.'
+      : 'Consulte os monstros, atualize os dados ou alterne entre Aden e Elmore.';
     $('zoomArea').disabled = !points.length;
-    $('zoomTarget').disabled = !target || !points.some(point => point.m.id === target.id);
+    $('zoomTarget').disabled = !target || !targetPoints.length;
     $('heatCanvas').hidden = !showHeat;
     $('mapPins').hidden = !showPositions;
     $('toggleHeat').setAttribute('aria-pressed', String(showHeat));
@@ -80,27 +86,40 @@ export function createMapController({ state, model, repository, updateWorld }) {
   }
   function render({ focus = false, targetOnly = true } = {}) {
     $('mapTitle').textContent = state.area || 'Selecione uma área';
-    const nextSignature = [state.area, state.world, repository.revision].join('|');
+    const nextSignature = [state.area, state.world, state.mob, repository.revision].join('|');
     if (signature !== nextSignature) {
       points = projectAreaLocations(model.zMap.get(state.area) || [], repository, state.world);
-      hotspots = drawHeatmap($('heatCanvas'), maps[state.world], points);
+      const target = model.MOB.get(state.mob);
+      const locationPoints = target ? points.filter(point => point.m.id === target.id) : points;
+      hotspots = drawHeatmap($('heatCanvas'), maps[state.world], locationPoints);
       signature = nextSignature;
       $('mapPins').innerHTML = '';
       $('hotspot').classList.remove('visible');
-      $('mapStatus').textContent = points.length ? `${fnum(points.length)} amostras de localização · toque numa mancha` : 'Sem coordenadas C1 para esta área. Os mobs continuam listados à direita.';
-      $('mapCoverage').textContent = points.length ? `${hotspots.length} concentrações` : 'Apenas catálogo';
+      if (target && locationPoints.length) {
+        const fixed = locationPoints.filter(point => point.kind === 'point').length;
+        const approximate = locationPoints.length - fixed;
+        const quality = [fixed && `${fnum(fixed)} posições fixas`, approximate && `${fnum(approximate)} amostras aproximadas`].filter(Boolean).join(' · ');
+        $('mapStatus').textContent = `${target.name}: ${quality}`;
+      } else {
+        $('mapStatus').textContent = target
+          ? `Sem registros de ${target.name} neste mapa.`
+          : points.length ? `${fnum(points.length)} amostras de localização · toque numa mancha` : 'Sem coordenadas C1 para esta área. Os mobs continuam listados à direita.';
+      }
+      $('mapCoverage').textContent = locationPoints.length ? `${hotspots.length} concentrações` : 'Apenas catálogo';
     }
     if (focus && (viewport.clientWidth <= 0 || viewport.clientHeight <= 0)) {
       pendingFocus = { targetOnly };
     } else if (focus && points.length) {
       pendingFocus = null;
       const selected = targetOnly && state.mob ? points.filter(point => point.m.id === state.mob) : [];
-      const targets = selected.length ? selected : points;
-      const xs = targets.map(point => point.x), ys = targets.map(point => point.y);
-      const left = Math.min(...xs), right = Math.max(...xs), top = Math.min(...ys), bottom = Math.max(...ys);
-      center = { x: (left + right) / 2, y: (top + bottom) / 2 };
-      const scale = baseScale();
-      zoom = clamp(Math.min(viewport.clientWidth / (Math.max(80, right - left) * scale * 1.5), viewport.clientHeight / (Math.max(80, bottom - top) * scale * 1.5)), 1, 5);
+      const targets = targetOnly && state.mob ? selected : points;
+      if (targets.length) {
+        const xs = targets.map(point => point.x), ys = targets.map(point => point.y);
+        const left = Math.min(...xs), right = Math.max(...xs), top = Math.min(...ys), bottom = Math.max(...ys);
+        center = { x: (left + right) / 2, y: (top + bottom) / 2 };
+        const scale = baseScale();
+        zoom = clamp(Math.min(viewport.clientWidth / (Math.max(80, right - left) * scale * 1.5), viewport.clientHeight / (Math.max(80, bottom - top) * scale * 1.5)), 1, 5);
+      } else fitMap();
     } else if (focus) fitMap();
     updateTransform(); paintPins(); updatePresentation();
   }

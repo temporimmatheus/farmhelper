@@ -20,24 +20,24 @@ test('mobile starts with one exploration section and an editable compact XP/MP s
   assert.equal(dom.get('mobileNavigation').hidden, false);
   assert.equal(dom.get('browserPanel').hidden, false);
   assert.equal(dom.get('mapPanel').hidden, true);
-  assert.equal(dom.get('characterBar').hidden, true);
-  assert.equal(dom.get('progressDashboard').hidden, true);
+  assert.equal(dom.get('setupPanel').hidden, true);
   assert.equal(dom.get('mobileXpRemaining').textContent, '—');
   assert.equal(dom.get('mobileMpSkill').textContent, '15');
+  assert.equal(dom.get('mobileMpPerKill').textContent, '—');
   dom.click('mobileSettingsToggle');
-  assert.equal(dom.get('characterBar').hidden, false);
-  assert.equal(dom.get('progressDashboard').hidden, false);
+  assert.equal(dom.get('setupPanel').hidden, false);
+  assert.equal(dom.get('setupPanel').open, true);
   assert.equal(dom.get('mobileSettingsToggle').getAttribute('aria-expanded'), 'true');
-  dom.input('level', 17); dom.input('xpExact', '50,25'); dom.input('mpSkill', 20); dom.input('castsKill', 3);
+  dom.input('level', 17); dom.input('xpExact', '50,25'); dom.input('mpSkill', 20); dom.input('skillPower', 10);
   assert.equal(dom.get('mobileLevelSummary').textContent, 'Nível 17');
   assert.equal(dom.get('mobileXpPercent').textContent, dom.get('xpPercentLabel').textContent);
   assert.equal(dom.get('mobileXpRemaining').textContent, dom.get('xpRemaining').textContent);
   assert.equal(dom.get('mobileKills').textContent, dom.get('xpKills').textContent);
   assert.equal(dom.get('mobileMpSkill').textContent, '20');
-  assert.equal(dom.get('mobileMpPerKill').textContent, '60');
+  assert.equal(dom.get('mobileMpPerKill').textContent, dom.get('mpPerKill').textContent.replace(' MP', ''));
   assert.equal(dom.get('mobileMpRemaining').textContent + ' MP', dom.get('mpRemaining').textContent);
   dom.click('mobileSettingsToggle');
-  assert.equal(dom.get('characterBar').hidden, true);
+  assert.equal(dom.get('setupPanel').hidden, true);
   assert.equal(dom.get('mobileXpPercent').textContent, '50,25%');
 });
 
@@ -124,6 +124,18 @@ test('opening target details from the map preserves the active mobile map sectio
   assert.equal(globalThis.document.activeElement, dom.get('mobileMapTab'));
 });
 
+test('target location action opens the selected mob on the mobile map', t => {
+  const { dom, storage } = mount(t, { scope: 'all' });
+  dom.delegate({ mob: 'c1-bind-poison-spider-06-gludin-town' });
+  assert.equal(dom.get('mobileTargetSheet').open, true);
+  dom.click('targetLocate');
+  assert.equal(dom.get('mobileTargetSheet').open, false);
+  assert.equal(dom.get('mobileMapTab').getAttribute('aria-selected'), 'true');
+  assert.equal(dom.get('mapPanel').hidden, false);
+  assert.equal(storage.read(STORAGE_KEYS.state).mob, 'c1-bind-poison-spider-06-gludin-town');
+  assert.match(dom.get('mapStatus').textContent, /^Bind Poison Spider:/);
+});
+
 test('mobile Compare keeps the compact summary available and restores exploration navigation', t => {
   const { dom } = mount(t, { level: 17, xpPercent: 25 });
   dom.click('compareAdd');
@@ -150,8 +162,7 @@ test('desktop/mobile transitions reuse the same target panel and restore the ful
   assert.equal(panel.parentElement, dom.get('exploreWorkspace'));
   assert.equal(panel.hidden, false);
   assert.equal(dom.get('mobileSummary').hidden, true);
-  assert.equal(dom.get('characterBar').hidden, false);
-  assert.equal(dom.get('progressDashboard').hidden, false);
+  assert.equal(dom.get('setupPanel').hidden, false);
   assert.equal(dom.get('mapPanel').hidden, false);
   assert.equal(dom.get('mapPanel').getAttribute('role'), undefined);
   assert.equal(storage.read(STORAGE_KEYS.state).mob, 'm001');
@@ -161,8 +172,8 @@ test('switching to mobile while editing keeps the focused field available', t =>
   const { dom } = mount(t, { level: 17 }, { mobile: false });
   dom.get('mpSkill').focus();
   dom.setMobile(true);
-  assert.equal(dom.get('characterBar').hidden, false);
-  assert.equal(dom.get('progressDashboard').hidden, false);
+  assert.equal(dom.get('setupPanel').hidden, false);
+  assert.equal(dom.get('setupPanel').open, true);
   assert.equal(dom.get('mobileSettingsToggle').getAttribute('aria-expanded'), 'true');
   assert.equal(globalThis.document.activeElement, dom.get('mpSkill'));
 });

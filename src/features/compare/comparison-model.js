@@ -6,13 +6,16 @@ export function buildComparison(state, model) {
     const area = model.statZone(zone);
     const target = area.rank[0]?.m || area.mobs[0];
     const xp = model.expMob(target);
-    return { area, target, xp, defense: model.def(target), progress: calculateProgress(state, xp) };
+    const combat = model.estimateCombat(target);
+    return { area, target, xp, combat, defense: model.def(target), progress: calculateProgress(state, xp, combat) };
   });
   const rows = [
     { label: 'Índice comparativo', note: 'XP, esforço e risco estimados', values: entries.map(e => +e.area.score.toFixed(1)), direction: 'higher', decimals: 1 },
     { label: 'XP por kill', note: 'Do alvo líder de cada área', values: entries.map(e => e.xp), direction: 'higher', unit: 'XP' },
+    { label: state.mode === 'magic' ? 'Casts estimados por mob' : 'Ataques estimados por mob', note: 'Sem críticos, buffs, soulshots ou falhas', values: entries.map(e => e.combat?.actions.expected ?? null), direction: 'lower', unit: state.mode === 'magic' ? 'casts' : 'hits' },
+    { label: 'MP estimado por mob', note: 'Skill selecionada · sem regeneração', values: entries.map(e => e.combat?.mpPerMob ?? null), direction: 'lower', unit: 'MP' },
     { label: 'Mobs até subir', note: 'A partir da sua XP atual', values: entries.map(e => e.progress.kills), direction: 'lower' },
-    { label: 'MP até subir', note: 'Mesma média de skills por kill', values: entries.map(e => e.progress.mpRemaining), direction: 'lower', unit: 'MP' },
+    { label: 'MP até subir', note: 'Com base nos casts estimados por mob', values: entries.map(e => e.progress.mpRemaining), direction: 'lower', unit: 'MP' },
     { label: 'XP por MP', note: 'Rendimento bruto, sem regeneração', values: entries.map(e => e.progress.xpPerMp === null ? null : +e.progress.xpPerMp.toFixed(1)), direction: 'higher', decimals: 1 },
     { label: 'HP estimado do alvo', note: 'HP do catálogo × 1,6', values: entries.map(e => e.target.hp * 1.6) },
     { label: state.mode === 'magic' ? 'M.Def do alvo' : 'P.Def do alvo', note: 'Verifique a qualidade da defesa no cartão', values: entries.map(e => e.defense) },

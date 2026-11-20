@@ -14,17 +14,19 @@ function mount(t, initial = {}, spawns = {}) {
   return { dom, storage };
 }
 
-test('monster cards expose selected state, source quality and aligned statistics', t => {
+test('monster cards prioritize XP, combat actions and locations; target details retain source quality', t => {
   const { dom } = mount(t, { scope: 'all' });
   dom.delegate({ area: 'Shadow of the Mother Tree' });
   dom.delegate({ mob: 'm001' });
+  dom.input('attackMode', 'physical', 'change');
   const html = dom.get('mobList').innerHTML;
   assert.match(html, /data-mob="m001" aria-pressed="true"/);
   assert.match(html, /Alvo atual/);
-  assert.match(html, /HP estimado/);
-  assert.match(html, /Def\. estimada/);
+  assert.match(html, /Para matar/);
+  assert.match(html, /ataques/);
   assert.match(html, /mob-stats/);
   assert.match(dom.get('targetTraits').innerHTML, /Def\. estimada/);
+  assert.match(dom.get('targetCombatEstimate').textContent, /ataques por mob/);
   dom.input('level', 17);
   assert.equal(dom.get('progressTargetName').textContent, 'Young Red Keltir');
   assert.equal(dom.get('progressTargetMode').textContent, 'Selecionado');
@@ -95,4 +97,14 @@ test('territory samples never appear as fixed target positions in the legend', t
   assert.match(dom.get('mapPointHint').textContent, /sem posições fixas/);
   assert.equal(dom.get('targetLegend').hidden, true);
   assert.equal(dom.get('mapPins').innerHTML, '');
+});
+
+test('selected mob map isolates its location records and explains approximate territories', t => {
+  const { dom } = mount(t, { scope: 'all' });
+  dom.delegate({ mob: 'c1-bind-poison-spider-06-gludin-town' });
+  assert.match(dom.get('targetLocationSummary').textContent, /territórios aproximados/);
+  assert.match(dom.get('mapStatus').textContent, /^Bind Poison Spider: .*amostras aproximadas/);
+  assert.match(dom.get('mapSelectionName').textContent, /Bind Poison Spider/);
+  assert.equal(dom.get('mapEmpty').hidden, true);
+  assert.equal(dom.get('zoomTarget').disabled, false);
 });

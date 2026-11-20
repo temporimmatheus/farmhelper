@@ -18,15 +18,16 @@ test('application mounts against real HTML IDs, starts at level zero and restore
     dom.input('level', 17);
     dom.input('xpExact', '50,25');
     dom.input('mpSkill', 20);
-    dom.input('castsKill', 3);
+    dom.input('skillPower', 10);
+    dom.delegate({ mob: 'm001' });
     assert.equal(dom.get('xpPercentLabel').textContent, '50,25%');
-    assert.equal(dom.get('mpPerKill').textContent, '60 MP');
+    assert.equal(dom.get('mpPerKill').textContent, '120 MP');
     assert.equal(storage.read(STORAGE_KEYS.state).level, 17);
     app.destroy();
     app = createApp({ storage, source });
     assert.equal(dom.get('level').value, 17);
     assert.equal(dom.get('xpPercentLabel').textContent, '50,25%');
-    assert.equal(dom.get('mpPerKill').textContent, '60 MP');
+    assert.equal(dom.get('mpPerKill').textContent, '120 MP');
     dom.input('level', 18);
     assert.equal(dom.get('xpPercentLabel').textContent, '0,00%');
   } finally { app?.destroy(); dom.cleanup(); }

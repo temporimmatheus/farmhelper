@@ -1,5 +1,6 @@
 import { MOBS } from '../data/monsters.js';
 import { byName, matchesQuery } from '../core/utils.js';
+import { estimateMobCombat } from './combat-estimate.js';
 
 /** Relative farm model. Formulas are preserved from the original atlas. */
 export function createFarmModel(state, repository, monsters = MOBS) {
@@ -14,13 +15,11 @@ export function createFarmModel(state, repository, monsters = MOBS) {
   const expMob = m => Math.max(0, Math.floor(m.xp * Math.pow(.909, Math.max(0, state.level - m.lv))));
 
   function mobScore(mob) {
-    // Normalized effort, not actual skill damage or a count of hits.
-    const hp = Math.max(1, mob.hp * 1.6);
-    const attack = state.mode === 'magic' ? 1000 * Math.sqrt(state.matk) : 140 * state.patk;
-    const effort = 1 + hp * def(mob) / Math.max(1, attack);
+    const combat = estimateMobCombat(state, mob);
+    const effort = combat?.actions.expected || 1;
     const higher = Math.max(0, mob.lv - state.level - 2);
     const risk = (mob.agg ? 1.075 : 1) * (1 + higher * .26);
-    return expMob(mob) / Math.max(.2, effort * risk);
+    return expMob(mob) / Math.max(1, effort * risk);
   }
 
   function statZone(zone) {
@@ -54,5 +53,10 @@ export function createFarmModel(state, repository, monsters = MOBS) {
       return state.level === 0 || state.scope === 'all' || mobs.some(m => m.lv >= state.level - 4 && m.lv <= state.level + 5);
     }).map(statZone).sort((a, b) => b.score - a.score);
   }
-  return { MOBS: monsters, MOB, zMap, zones, mobData, countPlaces, def, expMob, mobScore, statZone, visibleZones };
+  return {
+    MOBS: monsters, MOB, zMap, zones, mobData, countPlaces, def, expMob,
+    estimateCombat: mob => estimateMobCombat(state, mob),
+    get combatConfigured() { return state.mode === 'physical' || state.skillPower > 0; },
+    mobScore, statZone, visibleZones,
+  };
 }

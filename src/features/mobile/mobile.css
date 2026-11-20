@@ -29,6 +29,8 @@
 .mobile-target-sheet .target-body { padding: 18px 20px calc(24px + env(safe-area-inset-bottom)); }
 .mobile-target-sheet .target-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .mobile-target-sheet #targetClose { width: 44px; min-height: 44px; }
+.mobile-mode #setupPanel > summary { display: none; }
+.mobile-mode .setup-disclosure[open] > .character-bar { margin-top: 0; }
 @media (max-width: 760px), (max-width: 1024px) and (pointer: coarse) {
   .mobile-mode { --control-height: 44px; --mobile-summary-height: 184px; padding-left: max(14px, env(safe-area-inset-left)); padding-right: max(14px, env(safe-area-inset-right)); padding-bottom: calc(100px + env(safe-area-inset-bottom)); }
   .mobile-mode .app-header { padding-top: max(12px, env(safe-area-inset-top)); margin-bottom: 14px; }
