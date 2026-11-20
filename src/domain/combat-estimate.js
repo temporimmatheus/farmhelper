@@ -1,3 +1,7 @@
+import { DEFAULT_COMBAT_OBSERVATIONS } from '../data/combat-observations.js';
+
+export const EFFECTIVE_HP_FACTOR = 1.6;
+
 function actionEstimate(hp, damageMin, damageMax) {
   if (![hp, damageMin, damageMax].every(Number.isFinite) || hp <= 0 || damageMin <= 0 || damageMax <= 0) return null;
   const min = Math.max(1, Math.ceil(hp / damageMax));
@@ -10,23 +14,30 @@ function actionEstimate(hp, damageMin, damageMax) {
   };
 }
 
+export function effectiveMobHp(mob) {
+  if (!mob || !Number.isFinite(mob.hp) || mob.hp <= 0) return null;
+  return mob.hp * EFFECTIVE_HP_FACTOR;
+}
+
 export function getCombatObservation(state, mob) {
   const mobKey = mob?.sourceName || mob?.id;
   if (!mobKey) return null;
   const mode = state.mode === 'physical' ? 'physical' : 'magic';
   const attack = Number(mode === 'physical' ? state.patk : state.matk);
   const skillPower = mode === 'magic' ? Number(state.skillPower) : 0;
-  return state.combatObservations?.find(observation =>
+  const matchesProfile = observation =>
     observation.mobKey === mobKey
     && observation.mode === mode
     && observation.attack === attack
-    && observation.skillPower === skillPower
-  ) || null;
+    && observation.skillPower === skillPower;
+  const stored = state.combatObservations?.find(matchesProfile);
+  const baseline = DEFAULT_COMBAT_OBSERVATIONS.find(matchesProfile);
+  return stored ? { ...baseline, ...stored } : baseline || null;
 }
 
 export function estimateMobCombat(state, mob) {
-  if (!mob || !Number.isFinite(mob.hp) || mob.hp <= 0) return null;
-  const hp = mob.hp;
+  const hp = effectiveMobHp(mob);
+  if (hp === null) return null;
   const observation = getCombatObservation(state, mob);
   if (state.mode === 'physical') {
     const attack = Number(state.patk);

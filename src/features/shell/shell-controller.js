@@ -1,7 +1,7 @@
 import { $ } from '../../ui/dom.js';
 import { fnum } from '../../core/utils.js';
 import { badge } from '../../ui/components.js';
-import { getCombatObservation } from '../../domain/combat-estimate.js';
+import { effectiveMobHp, getCombatObservation } from '../../domain/combat-estimate.js';
 import { createMobileController } from '../mobile/mobile-controller.js';
 
 // Navigation belongs to the shell; character, formulas and saved selections stay in the store.
@@ -109,6 +109,7 @@ export function createShellController({ state, model }) {
         : 'Sem registros de localização C1 para este monstro.';
       $('targetXp').textContent = fnum(model.expMob(target));
       $('targetHp').textContent = fnum(target.hp);
+      $('targetEffectiveHp').textContent = fnum(effectiveMobHp(target));
       $('targetDefenseLabel').textContent = state.mode === 'magic' ? 'M.Def' : 'P.Def';
       $('targetDefense').textContent = fnum(model.def(target));
       $('targetSpawns').textContent = fnum(model.countPlaces(target));

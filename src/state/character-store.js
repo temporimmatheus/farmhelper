@@ -1,15 +1,14 @@
 import { clamp } from '../core/utils.js';
 import { STORAGE_KEYS } from '../core/storage.js';
-import { DEFAULT_COMBAT_OBSERVATIONS } from '../data/combat-observations.js';
 
 export const DEFAULT_STATE = Object.freeze({
   level: 0, matk: 26, patk: 17, skillPower: 0, mode: 'magic', query: '', scope: 'near',
   area: '', mob: '', world: 'aden', compare: Object.freeze([]),
-  xpPercent: 0, mpSkill: 15, combatObservations: DEFAULT_COMBAT_OBSERVATIONS,
+  xpPercent: 0, mpSkill: 15, combatObservations: Object.freeze([]),
 });
 
 function sanitizeCombatObservations(value) {
-  if (!Array.isArray(value)) return DEFAULT_COMBAT_OBSERVATIONS.map(observation => ({ ...observation }));
+  if (!Array.isArray(value)) return [];
   return value.slice(0, 200).flatMap(observation => {
     if (!observation || typeof observation !== 'object') return [];
     const { mobKey, mode } = observation;

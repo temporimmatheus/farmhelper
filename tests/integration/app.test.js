@@ -21,13 +21,13 @@ test('application mounts against real HTML IDs, starts at level zero and restore
     dom.input('skillPower', 10);
     dom.delegate({ mob: 'm001' });
     assert.equal(dom.get('xpPercentLabel').textContent, '50,25%');
-    assert.equal(dom.get('mpPerKill').textContent, '80 MP');
+    assert.equal(dom.get('mpPerKill').textContent, '120 MP');
     assert.equal(storage.read(STORAGE_KEYS.state).level, 17);
     app.destroy();
     app = createApp({ storage, source });
     assert.equal(dom.get('level').value, 17);
     assert.equal(dom.get('xpPercentLabel').textContent, '50,25%');
-    assert.equal(dom.get('mpPerKill').textContent, '80 MP');
+    assert.equal(dom.get('mpPerKill').textContent, '120 MP');
     dom.input('level', 18);
     assert.equal(dom.get('xpPercentLabel').textContent, '0,00%');
   } finally { app?.destroy(); dom.cleanup(); }
@@ -84,6 +84,7 @@ test('combat observations persist per monster and only apply to matching stats',
     assert.ok(mobId);
     dom.delegate({ mob: mobId });
     assert.match(dom.get('targetCombatEstimate').textContent, /2 casts observados por mob/);
+    assert.equal(dom.get('targetEffectiveHp').textContent, '423');
     assert.equal(dom.get('observedDamageMin').value, 218);
     assert.equal(dom.get('observedDamageMax').value, 218);
     assert.equal(dom.get('observedActions').value, 2);

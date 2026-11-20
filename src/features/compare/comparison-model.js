@@ -1,4 +1,5 @@
 import { calculateProgress } from '../../domain/progress.js';
+import { effectiveMobHp } from '../../domain/combat-estimate.js';
 
 /** Display data built from the same farm and progress models used by Explore. */
 export function buildComparison(state, model) {
@@ -17,7 +18,8 @@ export function buildComparison(state, model) {
     { label: 'Mobs até subir', note: 'A partir da sua XP atual', values: entries.map(e => e.progress.kills), direction: 'lower' },
     { label: 'MP até subir', note: 'Com base nos casts estimados por mob', values: entries.map(e => e.progress.mpRemaining), direction: 'lower', unit: 'MP' },
     { label: 'XP por MP', note: 'Rendimento bruto, sem regeneração', values: entries.map(e => e.progress.xpPerMp === null ? null : +e.progress.xpPerMp.toFixed(1)), direction: 'higher', decimals: 1 },
-    { label: 'HP do catálogo', note: 'Valor base do catálogo C1', values: entries.map(e => e.target.hp) },
+    { label: 'HP base do catálogo', note: 'Valor de referência C1', values: entries.map(e => e.target.hp) },
+    { label: 'HP efetivo estimado', note: 'HP base ×1,6 (calibrado por observações)', values: entries.map(e => effectiveMobHp(e.target)) },
     { label: state.mode === 'magic' ? 'M.Def do alvo' : 'P.Def do alvo', note: 'Verifique a qualidade da defesa no cartão', values: entries.map(e => e.defense) },
     { label: 'Monstros no catálogo', note: 'Variedade de alvos da área', values: entries.map(e => e.area.mobs.length) },
     { label: 'Monstros com localização', note: 'Cobertura dos registros C1', values: entries.map(e => e.area.withSpawns), totals: entries.map(e => e.area.mobs.length) },
