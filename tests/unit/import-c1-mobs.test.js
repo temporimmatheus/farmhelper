@@ -18,12 +18,16 @@ test('ignores malformed templates and parses classes from spawn records', () => 
   assert.deepEqual(parseSpawnClasses('npc_begin [orc_fighter] total=2 npc_end npc_ex_begin [guard] npc_ex_end'), ['orc_fighter', 'guard']);
 });
 
-test('builds one record per spawned monster and region, excluding custom spawns', () => {
+test('imports spawned monsters through level 40, excluding custom spawns', () => {
   const npcPos = join('datapack', 'script', 'NpcPos');
   const catalog = buildImportedCatalog(
-    [{ path: 'NpcData/warriors/00001_orc_fighter.npc', text: '[orc_fighter]\nlevel=8\nacquire_exp_rate=120\norg_hp=180\nbase_defend=50\nbase_magic_defend=40' }],
+    [
+      { path: 'NpcData/warriors/00001_orc_fighter.npc', text: '[orc_fighter]\nlevel=8\nacquire_exp_rate=120\norg_hp=180\nbase_defend=50\nbase_magic_defend=40' },
+      { path: 'NpcData/warriors/00002_high_orc.npc', text: '[high_orc]\nlevel=41\nacquire_exp_rate=999\norg_hp=900\nbase_defend=80\nbase_magic_defend=70' },
+    ],
     [
       { path: join(npcPos, '01_talking_island_town', '16_24.pos'), text: 'npc_begin [orc_fighter] pos={1;2;3;0} npc_end' },
+      { path: join(npcPos, '01_talking_island_town', '16_24.pos'), text: 'npc_begin [high_orc] pos={7;8;9;0} npc_end' },
       { path: join(npcPos, '01_talking_island_town', '16_25.pos'), text: 'npc_begin [orc_fighter] pos=anywhere npc_end' },
       { path: join(npcPos, '99_customs', 'event.pos'), text: 'npc_begin [orc_fighter] pos=anywhere npc_end' },
     ],
@@ -31,7 +35,7 @@ test('builds one record per spawned monster and region, excluding custom spawns'
   );
   assert.equal(catalog.length, 1);
   assert.equal(catalog[0].name, 'Orc Fighter');
-  assert.equal(catalog[0].zone, 'C1 · Talking Island Town');
+  assert.equal(catalog[0].zone, 'C1 · Talking Island (spawn region)');
   assert.equal(catalog[0].agg, null);
   assert.deepEqual(catalog[0].spawnData.points, [{ x: 1, y: 2, z: 3 }]);
 });
@@ -47,6 +51,7 @@ test('imports from either a datapack root or its script folder', async () => {
     const destination = join(root, 'output.js');
     const result = await importDatapack(root, destination);
     assert.equal(result.monsters, 1);
+    assert.equal(result.uniqueClasses, 1);
     const generated = await readFile(destination, 'utf8');
     assert.match(generated, /"name": "Orc Fighter"/);
     assert.match(generated, /"points": \[\s*\{\s*"x": 1/s);

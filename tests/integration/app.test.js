@@ -64,7 +64,7 @@ test('search, delegated monster selection, comparison and map controls remain co
   } finally { app?.destroy(); dom.cleanup(); }
 });
 
-test('cached map spawns project and render without external services', () => {
+test('cached map spawns project and render without external services', async () => {
   const dom = installDomFixture();
   const storage = memoryStorage({
     [STORAGE_KEYS.state]: JSON.stringify({ level: 17, area: 'Talking Island Village', scope: 'all', mob: 'm002' }),
@@ -73,7 +73,9 @@ test('cached map spawns project and render without external services', () => {
   let app;
   try {
     app = createApp({ storage, source });
-    assert.match(dom.get('mapCoverage').textContent, /1 concentra/);
+    assert.match(dom.get('mapCoverage').textContent, /\d+ concentra/);
+    for (let i = 0; i < 5; i++) dom.click('zoomIn');
+    await new Promise(resolve => setTimeout(resolve, 130));
     assert.match(dom.get('mapPins').innerHTML, /map-pin selected/);
     dom.click('zoomFit');
     // Rendering after zoom is debounced; transform is immediate.

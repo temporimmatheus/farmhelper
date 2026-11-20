@@ -2,10 +2,10 @@ import { MOBS } from '../data/monsters.js';
 import { byName } from '../core/utils.js';
 
 /** Relative farm model. Formulas are preserved from the original atlas. */
-export function createFarmModel(state, repository) {
-  const MOB = new Map(MOBS.map(m => [m.id, m]));
-  const zones = [...new Set(MOBS.map(m => m.zone))].sort((a, b) => a.localeCompare(b));
-  const zMap = new Map(zones.map(z => [z, MOBS.filter(m => m.zone === z)]));
+export function createFarmModel(state, repository, monsters = MOBS) {
+  const MOB = new Map(monsters.map(m => [m.id, m]));
+  const zones = [...new Set(monsters.map(m => m.zone))].sort((a, b) => a.localeCompare(b));
+  const zMap = new Map(zones.map(z => [z, monsters.filter(m => m.zone === z)]));
   const mobData = m => repository.get(m.id);
   const countPlaces = m => mobData(m).points.length + mobData(m).areas.length;
   const def = m => state.mode === 'magic'
@@ -54,5 +54,5 @@ export function createFarmModel(state, repository) {
       return state.level === 0 || state.scope === 'all' || mobs.some(m => m.lv >= state.level - 4 && m.lv <= state.level + 5);
     }).map(statZone).sort((a, b) => b.score - a.score);
   }
-  return { MOBS, MOB, zMap, zones, mobData, countPlaces, def, expMob, mobScore, statZone, visibleZones };
+  return { MOBS: monsters, MOB, zMap, zones, mobData, countPlaces, def, expMob, mobScore, statZone, visibleZones };
 }

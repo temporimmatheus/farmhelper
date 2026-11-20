@@ -1,6 +1,6 @@
 # Farm Helper
 
-Atlas de farm para **Lineage II Reborn · Chronicle 1**, extraído do HTML original para uma aplicação JavaScript modular. Mantém os 202 monstros, o ranking de áreas, os mapas, a comparação entre regiões, a barra de XP e as estimativas de MP.
+Atlas de farm para **Lineage II Reborn · Chronicle 1**, extraído do HTML original para uma aplicação JavaScript modular. Inclui um catálogo ampliado de monstros C1 até o nível 40, o ranking de áreas, os mapas, a comparação entre regiões, a barra de XP e as estimativas de MP.
 
 ## Rodar localmente
 
@@ -60,10 +60,12 @@ A nova interface tem navegação **Explorar/Comparar**, personagem e progresso c
 
 O domínio não acessa o DOM ou a rede. Os serviços recebem suas dependências por parâmetros e podem ser testados com fontes locais. Os painéis recebem o estado e o modelo de cálculo; `app.js` conecta essas partes. As interações do mapa têm ciclo de montagem e limpeza próprios.
 
+Os registros de monstros e spawns do datapack C1 Master Toma foram incluídos com permissão do mantenedor. Consulte o [repositório de origem](https://github.com/master-toma/l2datapack).
+
 ## Como evoluir
 
 - **Novos monstros:** edite `src/data/monsters.js`, mantendo os IDs únicos. Áreas são agrupadas automaticamente pelo campo `zone`.
-- **Importar um catálogo C1:** execute `npm run import:c1 -- "C:\caminho\para\o\datapack"` com uma cópia autorizada que contenha `script\NpcData` e `script\NpcPos` (ou passe diretamente a pasta `script`). O importador inclui templates de monstros/bosses que aparecem nos arquivos `.pos`, junto das localizações fixas e territórios encontrados, agrupa-os pela pasta de região e grava o resultado em `src/data/imported-monsters.js`. Os 202 registros atuais prevalecem em caso de nomes repetidos. A agressividade não inferível fica marcada como desconhecida. O diretório `99_customs` é ignorado.
+- **Importar um catálogo C1:** execute `npm run import:c1 -- "C:\caminho\para\o\datapack"` com uma cópia autorizada que contenha `script\NpcData` e `script\NpcPos` (ou passe diretamente a pasta `script`). O importador inclui templates de monstros/bosses até o nível 40 que aparecem nos arquivos `.pos`, junto das localizações fixas e territórios encontrados, agrupa-os pelas regiões do datapack e grava o resultado em `src/data/imported-monsters.js`. Essas regiões são agrupamentos amplos do datapack, não nomes de áreas de farm verificados. Os registros atuais prevalecem em caso de nomes repetidos. A agressividade não inferível fica marcada como desconhecida. O diretório `99_customs` é ignorado.
 - **Novas fórmulas:** altere `src/domain/farm-model.js` ou `src/domain/progress.js`. Atualize os testes de referência somente se a mudança no resultado for intencional.
 - **Outra fonte de spawns:** implemente `listFiles()` e `getFile(path)` e injete a fonte em `createApp({ source })` ou no serviço de sincronização.
 - **Novo painel:** crie uma pasta em `src/features/`, adicione a estrutura ao HTML e conecte a renderização em `src/app.js`.

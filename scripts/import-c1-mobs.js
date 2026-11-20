@@ -5,6 +5,7 @@ import { parseRows, parseTerritories } from '../src/domain/spawn-parser.js';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const output = resolve(root, 'src/data/imported-monsters.js');
+const MAX_MONSTER_LEVEL = 40;
 
 async function walk(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -69,7 +70,7 @@ function regionFromPath(path, npcPos) {
 }
 
 function regionLabel(region) {
-  return region.replace(/^\d+_/, '').replace(/_/g, ' ')
+  return region.replace(/^\d+_/, '').replace(/_(?:castle_)?town$/i, '').replace(/_/g, ' ')
     .replace(/\b[a-z]/g, letter => letter.toUpperCase());
 }
 
@@ -84,7 +85,7 @@ export function buildImportedCatalog(npcFiles, spawnFiles, npcPosRoot) {
   for (const file of npcFiles) {
     if (!/(?:^|[/\\])(?:warriors|bosses)(?:[/\\])/i.test(file.path)) continue;
     const template = parseNpcTemplate(file.text);
-    if (template) templates.set(normalize(template.name), template);
+    if (template && template.level <= MAX_MONSTER_LEVEL) templates.set(normalize(template.name), template);
   }
   for (const file of spawnFiles) parseTerritories(file.text, territories);
 
@@ -106,7 +107,7 @@ export function buildImportedCatalog(npcFiles, spawnFiles, npcPosRoot) {
           lv: template.level,
           hp: template.hp,
           xp: template.xp,
-          zone: `C1 · ${regionLabel(region)}`,
+          zone: `C1 · ${regionLabel(region)} (spawn region)`,
           agg: null,
           pLo: template.physicalDefense,
           pHi: template.physicalDefense,
@@ -114,7 +115,7 @@ export function buildImportedCatalog(npcFiles, spawnFiles, npcPosRoot) {
           defQuality: 'ref',
           link: '',
           dataStatus: 'imported',
-          spawnData: { points: [], areas: [], source: 'Local C1 datapack' },
+          spawnData: { points: [], areas: [], source: 'Master Toma C1 datapack (used with permission)' },
         };
         records.set(id, record);
       }
@@ -149,7 +150,12 @@ export async function importDatapack(source, destination = output) {
   const catalog = buildImportedCatalog(npcFiles, spawnFiles, npcPos);
   if (!catalog.length) throw new Error('No spawned monsters with matching NPC templates were found.');
   await writeFile(destination, `export const IMPORTED_MOBS = ${JSON.stringify(catalog, null, 2)};\n`, 'utf8');
-  return { templates: npcFiles.length, spawnFiles: spawnFiles.length, monsters: catalog.length };
+  return {
+    templates: npcFiles.length,
+    spawnFiles: spawnFiles.length,
+    monsters: catalog.length,
+    uniqueClasses: new Set(catalog.map(mob => mob.sourceName)).size,
+  };
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
@@ -160,7 +166,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   } else {
     try {
       const result = await importDatapack(source);
-      console.log(`Imported ${result.monsters} spawned monster entries from ${result.templates} templates and ${result.spawnFiles} spawn files.`);
+      console.log(`Imported ${result.monsters} regional entries (${result.uniqueClasses} unique classes, level ≤ ${MAX_MONSTER_LEVEL}) from ${result.templates} templates and ${result.spawnFiles} spawn files.`);
       console.log(`Output: ${relative(root, output)}`);
     } catch (error) {
       console.error(`C1 import failed: ${error.message}`);

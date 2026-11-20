@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { MOBS } from '../../src/data/monsters.js';
+import { CURATED_MOBS, MOBS } from '../../src/data/monsters.js';
+import { IMPORTED_MOBS } from '../../src/data/imported-monsters.js';
 import { createFarmModel } from '../../src/domain/farm-model.js';
 import { project, pointInside } from '../../src/domain/projection.js';
 import { ADEN_LANDMARKS, ELMORE_LANDMARKS } from '../../src/data/maps.js';
@@ -12,11 +13,19 @@ const emptyRepository = { get: () => ({ points: [], areas: [] }) };
 
 for (const snapshot of snapshots) {
   test(`original ranking preserved at level ${snapshot.state.level}, ${snapshot.state.mode}`, () => {
-    const model = createFarmModel(sanitizeState(snapshot.state), emptyRepository);
-    assert.equal(MOBS.length, snapshot.count);
+    const model = createFarmModel(sanitizeState(snapshot.state), emptyRepository, CURATED_MOBS);
+    assert.equal(CURATED_MOBS.length, snapshot.count);
     assert.deepEqual(model.visibleZones().slice(0, 5).map(a => ({ zone: a.zone, score: +a.score.toFixed(10), leader: a.rank[0]?.m.id })), snapshot.areas);
   });
 }
+
+test('imported catalog contains only spawned mobs through level 40', () => {
+  assert.ok(IMPORTED_MOBS.length > 0);
+  assert.ok(IMPORTED_MOBS.every(mob => mob.lv >= 1 && mob.lv <= 40));
+  assert.ok(IMPORTED_MOBS.every(mob => mob.spawnData.points.length || mob.spawnData.areas.length));
+  assert.ok(IMPORTED_MOBS.every(mob => mob.agg === null));
+  assert.ok(MOBS.length > CURATED_MOBS.length);
+});
 
 test('monster IDs are unique; searching ignores accents and punctuation', () => {
   assert.equal(new Set(MOBS.map(m => m.id)).size, MOBS.length);

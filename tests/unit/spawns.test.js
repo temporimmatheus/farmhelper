@@ -54,6 +54,18 @@ test('repository seeds imported spawn data when no browser cache exists', () => 
   assert.deepEqual(repo.get('imported-mob').points, [{ x: 4, y: 5 }]);
 });
 
+test('repository merges imported spawn data with an older browser cache', () => {
+  const storage = memoryStorage({
+    [STORAGE_KEYS.spawns]: JSON.stringify({ 'imported-mob': { points: [{ x: 1, y: 2 }], areas: [] } }),
+  });
+  const repo = createSpawnRepository(storage, [{
+    id: 'imported-mob',
+    name: 'Orc Fighter',
+    spawnData: { points: [{ x: 4, y: 5 }, { x: 1, y: 2 }], areas: [], source: 'Local C1 datapack' },
+  }]);
+  assert.deepEqual(repo.get('imported-mob').points, [{ x: 4, y: 5 }, { x: 1, y: 2 }]);
+});
+
 test('sync reads all territories first, caches results and skips fresh complete syncs', async () => {
   const storage = memoryStorage();
   const repository = createSpawnRepository(storage, monsters);

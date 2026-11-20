@@ -12,13 +12,21 @@ function cleanEntry(value) {
   };
 }
 
+function mergeEntries(first, second) {
+  const points = new Map([...first.points, ...second.points].map(point => [`${point.x}|${point.y}|${point.z || 0}`, point]));
+  const areas = new Map([...first.areas, ...second.areas].map(area => [area.vertices.map(point => `${point.x},${point.y},${point.z || 0}`).join('|'), area]));
+  return { points: [...points.values()], areas: [...areas.values()], source: second.source || first.source };
+}
+
 export function createSpawnRepository(storage, monsters) {
   const entries = new Map();
   let revision = 1;
   const cached = storage.read(STORAGE_KEYS.spawns, {});
   for (const mob of monsters) {
-    if (cached && Object.hasOwn(cached, mob.id)) entries.set(mob.id, cleanEntry(cached[mob.id]));
-    else if (mob.spawnData) entries.set(mob.id, cleanEntry(mob.spawnData));
+    const stored = cached && Object.hasOwn(cached, mob.id) ? cleanEntry(cached[mob.id]) : null;
+    const imported = mob.spawnData ? cleanEntry(mob.spawnData) : null;
+    if (stored && imported) entries.set(mob.id, mergeEntries(imported, stored));
+    else if (stored || imported) entries.set(mob.id, stored || imported);
   }
   const lookup = new Map(), byId = new Map(monsters.map(mob => [mob.id, mob]));
   for (const mob of monsters) {

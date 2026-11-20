@@ -1,6 +1,6 @@
 import { IMPORTED_MOBS } from './imported-monsters.js';
 
-const BASE_MOBS = [
+export const CURATED_MOBS = [
   {
     "id": "m001",
     "lv": 1,
@@ -3043,7 +3043,7 @@ const BASE_MOBS = [
 ];
 
 const normalizeName = value => String(value).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
-const curatedNames = new Set(BASE_MOBS.map(mob => normalizeName(mob.name)));
+const curatedNames = new Set(CURATED_MOBS.map(mob => normalizeName(mob.name)));
 const importedByName = new Map();
 for (const mob of IMPORTED_MOBS) {
   const key = normalizeName(mob.name);
@@ -3052,7 +3052,7 @@ for (const mob of IMPORTED_MOBS) {
   current.areas.push(...(mob.spawnData?.areas || []));
   importedByName.set(key, current);
 }
-const curatedMobs = BASE_MOBS.map(mob => {
+const curatedMobs = CURATED_MOBS.map(mob => {
   const spawns = importedByName.get(normalizeName(mob.name));
   return spawns ? { ...mob, spawnData: { ...spawns, source: 'Local C1 datapack' } } : mob;
 });
